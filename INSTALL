@@ -1,0 +1,91 @@
+= Instalation with RubyGems
+
+1. Download and install RubyGems: 
+
+  http://rubygems.rubyforge.org
+
+2. Install the distribution:
+
+  gem install og
+
+  (make sure you have the latest stable versions of Ruby and RubyGems
+  installed)
+
+  When asked about the dependencies to include, only accept
+  the dependencies for the RDBMS backends you are planning
+  to use.
+
+3. Set environment variable (required to load RubyGems):
+
+  export RUBYOPT=-rubygems
+
+  You can add this in you .bashrc in Unix.
+
+  Alternatively you can run your applications with the -rubygem 
+  option:
+
+  ruby -rubygem xxx.rb
+
+= Installation without RubyGems using script.
+
+Installation without RubyGems is *strongly* discouraged.
+However, as Og is all about freedom and possibilities,
+a standard installation script is provided.
+
+1. Switch to an administrator account 
+
+  For example in Unix:
+
+  $ su -
+
+2. Run the installation script.
+
+  $ ruby setup.rb
+
+This installation script also installs some vendor libraries
+that you possibly have allready installed. Use with caution.
+
+Dependencies needed: See 'ProjectInfo' file located in the 
+current directory.
+
+Install the desired database client libraries Libraries are not 
+required for Og to run. If you wish to use an adapter which 
+uses one of the databases, then you'll need to install the 
+client library
+
+Postgres, MySQL, Kirbybase
+
+
+= Manual installation.
+
+Uncompress your distribution (Unix example):
+
+$ cd my_dir
+$ tar xvfz og-x.x.x.tar.gz
+
+Put the libray dir in the Ruby path (Unix example):
+
+$ export RUBYOPT='-I path/to/og/lib'
+
+
+= Additional libraries
+
+Og uses a number of additional libraries. RubyGems
+installs most of them, but here is the complete
+list for your reference:
+
+* Ruby-psql 
+  http://www.postgresql.jp/interfaces/ruby/archive/ruby-postgres-0.7.1.tar.gz
+  Ruby interface to the PostgreSQL RDBMS.
+
+* Ruby-mysql 
+  http://tmtm.org/ja/ruby/mysql/README_en.html
+  Ruby interface to the MySQL RDBMS.
+  
+* PostgreSQL 
+  http://www.postgres.org
+  Used for the Database Backend.
+  
+* MySQL 
+  http://www.mysql.org
+  Used for the Database Backend.

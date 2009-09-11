@@ -1,0 +1,1277 @@
+11-08-2005  Aleksi Niemela <Aleksi.Niemela@cs.helsinki.fi>
+
+  * lib/og/store/*: log creation of join tables.
+
+07-08-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/entity.rb: fixed schema_inheritance alias.
+  
+  * lib/og.rb: updated comments.
+  
+  * doc/RELEASES: updated.
+
+06-08-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/entity.rb: helper method.
+  
+  * lib/og/manager.rb (#manage_class): alias,
+  (#get_store): fixed bug in thread_safe mode, allows multiple
+  og's to run in thread safe mode.
+  
+  * test/og/tc_multiple.rb: implemented.
+
+05-08-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/relation/has_many.rb: support for legacy schemas,
+  :foreign_field option,
+  quote foreign_key values,
+  fixed foreign_field bug.
+
+  * lib/og/relation/refers_to.rb: support for legacy schemas.
+  
+  * lib/og/entity.rb (#set_primary_key): also get primary key class,
+  (#og_quote): added.
+
+04-08-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/*: use #field_for_property where needed,
+  don't create the oid property if not needed!
+  fixed enchant some more,
+  fixed finder calculation to honour field override.
+  
+  * lib/og/store/sql.rb (#table): honour sql_table metadata,
+  (#field_for_property): implemented,
+  (#eval_og_read): updated to handle custom fields.
+  
+  * lib/og/entity.rb (#sql_table): added helper [daval],
+  added set_xxx prefix to some helper.
+  
+  * test/og/tc_reverse.rb: introduced,
+  Yeah, I got data written to a legacy table.
+  
+  * lib/og/test/testcase.rb: introduced,
+  (fixture): implemented,
+  (og_fixture): implemented.
+
+  * lib/og/test/assertions.rb: introduced.
+
+30-07-2005  George Moschovitis <gm@navel.gr>
+
+  * test/: renamed from testing.
+
+28-07-2005  George Moschovitis <gm@navel.gr>
+
+  * --- VERSION 0.21.1 ---
+  
+  * lib/og/store/psql.rb: custom eval_og_allocate,
+  fixed inheritance problem.
+
+  * lib/og/store/sql.rb: factored out eval_og_allocate.
+    
+  * lib/og/store/*: fixed inheritance problem.
+  
+  * lib/og/relation.rb (#enchant): fixed for polymorphic.
+
+27-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og.rb: moved setup from manager.rb here,
+  (#escape): added helper.
+  
+  * lib/og/relation.rb (#setup): refactored,
+  (#enchant): manually update the owner class to handle inherited
+  relations.
+  
+  * slightly modified deborah's patch.
+  
+  * test/og/tc_store.rb: updated,
+  added test for inhertiance/relarion problem.
+  
+  * lib/og/mixin/orderable.rb: updated to latest, passes test.
+  
+  * lib/og/store/sql.rb (#update_by_sql): implemented.
+  
+  * lib/og/entity.rb (#update_by_sql): added.
+  (#update_properties): reimplemented [aleksi],
+  added some nice aliases,
+  (##update): use update_by_sql,
+  (##escape): implemented.
+  
+27-07-2005  Deborah Hooker <deb@ysabel.org>
+
+  * lib/og/store/sql.rb (#ordered_join_table_keys): implemented,
+  (#join): fix,
+  (#unjoin): fix,
+  (#eval_og_create_schema): fix.
+
+24-07-2005  George Moschovitis <gm@navel.gr>
+
+  * --- VERSION 0.21.0 ---
+
+  * lib/og/relation/joins_many.rb: fixed the same bugs.
+  
+  * lib/og/relation/has_many.rb: fixed find_options override
+  bug [guillaunne],
+  keep find_options in multiple calls.
+  
+  * Rakefile: updated,
+  fixed gem RDOC generation problem [Markus].
+  
+22-07-2005  George Moschovitis <gm@navel.gr>
+
+  * doc/RELEASES: updated.
+  
+  * converted all code to use spaces instead of tab.
+  
+  * lib/og/relation/refers_to: changes in Aleksi's patch.
+  
+22-07-2005  Aleksi Niemela <Aleksi.Niemela@cs.helsinki.fi>
+
+  * lib/og/relation/refers_to: a small patch.  
+
+21-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/relation/joins_many.rb: honour the :through option
+  to allow for customized join tables,
+  yeah, I got the intermediate table used,
+  pass field values for the custom join table!
+  (xxx_join): auto generate join metadata method!
+  
+  * lib/og/relation.rb (#resolve_symbol): implemented,
+  (#resolve_target): use resolve_symbol.
+  
+  * lib/og/store/sql.rb (eval_og_create_schema): added to allow
+  for interception [ysabel],
+  (#join): accepts fields for custom join tables!
+  
+20-07-2005  George Moschovitis <gm@navel.gr>
+
+  * test/og/tc_join.rb: introduced.
+  
+  * lib/og/store/mysql.rb: use custom join create index.
+  
+  * lib/og/store/sql.rb (#tableize): implemented,
+  (#resolve_limit_options): improved,
+  after *a lot* of changes the patch works :)
+  (#create_join_table_sql): returns an array.
+  
+  * manualy applied and improved ysabel's patch.
+
+20-07-2005  Ysabel <gm@navel.gr>
+
+  * lib/og/store/sql.rb (#join_object_ordering): implemented,
+  (#join_class_ordering): implemented,
+  (#join_*): added many helper methods,
+  (#build_join*): added many helpers,
+  (#create_join*): added helpers,
+  (#resolve_limit_options): added.
+  
+  * lib/og/mysql.rb: refactored.
+  
+  * lib/og/store/kirby.rb: refactored.
+  
+  * lib/og/relation/joins_many.rb: refactored, cleaned up.
+
+19-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/mysql.rb (Result#fields): added.
+
+  * lib/og/store/psql.rb (#read_row): added.
+
+  * lib/og/store/sqlite.rb (ResultSet#fields): added.
+  
+  * lib/og/store/sql.rb (#read_all): reimplemented to get options
+  and use read_row,
+  (#resolve_options): handles :select,
+  (#read_all): reimplemented.
+  (#read_all): implemented.
+  
+  * test/og/tc_query.rb: implemented.
+
+19-07-2005  Michael Neumann <mneumann@ntecs.de>
+
+  * install.rb: fixes.
+
+18-07-2005  Michael Neumann <mneumann@ntecs.de>
+
+  * lib/og/collection.rb (#delete_if): implemented.
+  
+  * lib/og/relation/refers_to.rb: nil fix.
+  
+  * lib/og/store/psql.rb (#start): use BEGIN TRANSACTION, more
+  compatible with older versions.
+
+17-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/manager.rb (Og##options=): added.
+
+16-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/relation/joins_many.rb: pass options in collection,
+  implemented count_proc [SOS: placeholder!!]
+  
+  * lib/og/store/sql.rb: find_by_sql_one alias.
+    
+  * lib/og/relation/has_many.rb: implemented count_proc.
+  
+  * lib/og/collection.rb (#size): implemented [mneumann],
+  (#count): size alias,
+  (#unload): implemented.
+
+13-07-2005  Michael Neumann <mneumann@ntecs.de>
+
+  * lib/og/store/sql.rb (#aggregate): implemented,
+  (#count): #aggregate alias.
+
+13-07-2005  bizilan <bizilan@laposte.net>
+
+  * lib/og/store/sql.rb (#resolve_options): change the order of
+  offset/limit to be more compatible with sqlite.
+
+13-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/psql.rb (#initialize): Og::Blob mapping [menumann].
+  
+  * lib/og/relation/has_many.rb: check for nil [menumann].
+
+  * lib/og/relation/refers_to.rb: check for nil [menumann].
+
+11-07-2005  George Moschovitis <gm@navel.gr>
+
+  * --- VERSION 0.20.0 ---
+
+  * doc/RELEASES: updated.
+  
+  * lib/og/store/sql.rb: escape all condition interpolations [miika].
+  
+  * vendor/kirbybase.rb: copied here, cleaned up store dir.
+  
+  * lib/og/store/mysql.rb: check if reconnect exists,
+  verified that the fallback adapter works.
+  
+11-07-2005  Aleksi Niemela <Aleksi.Niemela@cs.helsinki.fi>
+
+  * lib/og/mixin/hierarchical.rb (#parent): added.
+
+07-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/vendor/mysql.rb: added as a fallback [james_b].
+
+05-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/entity.rb (##find): fixed NASTY bug!
+  
+  * lib/og/store.rb: introduced :uniq keyword.
+
+03-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/sql.rb (#find_one): should not limit by default.
+  
+  * added more comments to various classes.
+
+01-07-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/sql.rb (#join_table): fix for self join case [petr].
+
+30-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/relations/has_many.rb (#resolve_polymorphic): made
+  more fault tolerant.
+
+24-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og.rb: added various settings.
+
+  * doc/AUTHORS: updated.  
+
+21-06-2005  Aleksi Niemela <Aleksi.Niemela@cs.helsinki.fi>
+
+  * lib/og/relation.rb (#resolve_target): fixed infinite loop
+  bug.
+  
+20-06-2005  George Moschovitis <gm@navel.gr>
+
+  * README: facet/redcloth pointers [bcandler]
+  
+  * INSTALL: facet/redcloth pointers [bcandler]
+
+18-06-2005  George Moschovitis <gm@navel.gr>
+  
+  * lib/og/store/sql.rb (#find_by_sql): alias for select.
+
+17-06-2005  George Moschovitis <gm@navel.gr>
+
+  * --- VERSION 0.19.0 ---
+
+  * examples/run.rb: fixes to make it run again.
+  
+  * README: updated.
+
+15-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/psql.rb: minor changes while applying michael's
+  patch.
+  
+  * yeah, the new code passes tc_store.rb
+  
+  * lib/og/sql.rb: don't create tables for polymorphic parents.
+
+  * lib/og/entity.rb (#polymorphic_parent?): implemented
+
+  * lib/og/relation/has_many.rb: (#initialize): imply belongs_to
+  relation if missing!,
+  (#resolve): gets symbol for resolve method.
+  
+  * lib/og/relation.rb: fixes for polymorphic relations,
+  (#initialize): fix for non polymorphic.
+
+15-06-2005  Michael Neumann <mneumann@ntecs.de>
+
+  * lib/og.rb (Blob): introduced.
+
+14-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/relation.rb: added support for polymorphic relations,
+  (#polymorphic?): added.
+  
+  * back from vacations, lets rock!
+
+09-06-2005  George Moschovitis <gm@navel.gr>
+
+  * test/og/tc_polymorphic.rb: introduced.
+
+08-06-2005  George Moschovitis <gm@navel.gr>
+
+  * doc/AUTHORS: updated.
+  
+  * lib/og/store/mysql.rb: added :table_type options so you can
+  use InnoDB tables.
+
+07-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/manager.rb (#manage): call specialized enchanting 
+  code.
+  
+  * lib/og/mixin/optimistic_locking.rb: after some fixes it kinda
+  works,
+  correclty overloads #update.
+  overload #save.
+
+06-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/*: implemented sql_update for psql, mysql, sqlite3.
+  
+  * lib/og/mixin/optimistic_locking.rb: introduced,
+  (#update_with_lock): implemented.
+  
+  * test/og/tc_store.rb: added extra tests for extra functionality,
+  updated ...update tests.
+  
+  * lib/og/entity.rb (#select/#select_one): added,
+  added exist? alias.
+  
+  * lib/og/store/sql.rb: (#read_one): use ensure res.close [ghislain]
+  (#read_all): ditto,
+  (#select): implemented,
+  (#select_one): implemented.
+  Auto add SELECT * FROM table if missing for extra convienience,
+  (#find): handle :sql option.
+  added exist? alias,
+  (#sql_update): introduced.
+  (#update, #update_properties): use sql_update.
+  (#update_condition): implemented.
+  use update_condition to simplify the code.
+  (#update): new more flexible interface.
+
+05-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/*: adapted og insert in all stores.
+  
+  * COOL: SuperClass.all returns an array of subclasses, 
+  correctly typed.
+  
+  * lib/og/store/sql.rb: added more comments, cleaned up,
+  sanitized usage of res, row and res_row,
+  (#og_allocate): implemented.
+
+04-06-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/entity.rb (#all): correctly passes :type find option
+  for STI classes.
+  
+  * lib/og/store/mysql.rb (#eval_og_insert): handle STI.
+  
+  * lib/og/store/sql.rb (#fields_for_class): calculates extra
+  fields for STI tables,
+  (#find): added support for type in finders.
+  
+  * doc/AUTHORS: updated.
+  
+  * lib/og/entity.rb (#schema_inheritance): added.
+  
+  * lib/og/manager.rb (#manageable?): introduced,
+  (#manage): keep inheritance metadata,
+  first resolve inheritance.
+
+03-06-2005  George Moschovitis <gm@navel.gr>
+
+  * test/og/tc_inheritance.rb: introduced.
+
+02-06-2005 Ghislain Mary <gmary@lunacymaze.org>
+
+  * lib/og/store/sqlite.rb: fixed typo.
+  (#og_insert): fixet last_insert_rowid calculation.
+
+29-05-2005  George Moschovitis <gm@navel.gr>
+
+  * --- VERSION 0.18.0 ---
+  
+  * lib/og/relation/has_many.rb: takes :order into account.
+  
+  * lib/og/entity.rb (#find/#all): take find_options into account,
+  (#find_options): implemented.
+  (#order): implemented.
+
+24-05-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/kirby.rb (#og_insert): implemented,
+  (#destroy): implemented,
+  save files in a custom directory.
+  
+  * test/*: some changes to make them pass again.
+
+  * lib/og/mixin/orderable.rb: use facet/macro instead of dinclude.
+
+  * lib/og/mixin/hierarchical.rb: use facet/macro instead of dinclude.
+  
+23-05-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og.rb: added thread_safe mode.
+  
+  * lib/og/manager.rb: re-added support for threads,
+  use thread code only in thread safe mode.
+
+20-05-2005  George Moschovitis <gm@navel.gr>
+
+  * lib/og/store/psql.rb (#initialize) min_messages, encoding,
+  schema_order options.
+  
+  * lib/og/store/kirbybase/*: copied files from kirby distribution.
+  
+  * lib/og/store/kirby.rb: introduced,
+  (#create_table): works.
+  (#create_column_map): implemented.
+  
+  * lib/og/store/*: converted all stores to better handle nil
+  values [mneumann],
+  don't use the term 'column', use 'field' instead to make
+  more SQL agnostic.
+  
+  * lib/og/store/sql.rb (#parse_float): added,
+  (#parse_int): added,
+  (#read_prop): handle nil values. [mneumann]
+  
+  * lib/og/store/sqlite.rb (#blank?): alias eof? [jperrot]
+  
+  --- THE REVENGE OF SITH --- 
+
+19-05-2005  George Moschovitis <gm@navel.gr>
+
+  * resolved a posted bug [mneumann].
+  
+  * lib/og/relation/has_many.rb: added 'dummy' remove support.
+  
+  * lib/og/collection.rb: improved Julien's patch.
+
+18-05-2005  Julien Perrot <jperrot@exosec.fr>
+
+  * lib/og/collection.rb (#remove): implemented.
+  
+  * lib/og/relation/joins_many.rb (#remove_xxx): implemented.
+  
+  * lib/og/store/sql.rb (#unjoin): implemented.
+  
+  * lib/og/manager.rb (#==): fixed when other == nil.
+  
+18-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sqlite.rb (#db_filename): overridable db file name [slewis].
+  
+  * README: added warning about sqlite3 version [slewis].
+
+17-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og.rb: keep active manager.
+
+16-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * --- VERSION 0.17.0 ---
+
+  * doc/RELEASES: updated.
+
+  * README: updated.
+  
+15-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sql.rb (#enchant): check for create_schema.
+  
+  * lib/og.rb: updated RDoc.
+  
+  * doc/RELEASES: updated.
+  
+15-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * examples/run.rb: after some changes it runs.
+  
+  * lib/og/store.rb (#delete): improved obj_or_pk detection.
+
+14-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * doc/tutorial.txt: added warning.
+  
+  * doc/RELEASES: updated.
+  
+  * lib/og/store/*: improved error messages.
+  
+  * lib/og/store/sqlite.rb (#create_table): create join table,
+  rescue Object to catch the exception.
+
+  * lib/og/store/mysql.rb (#create_table): create join table.
+
+  * lib/og/store/psql.rb (#create_table): create join table.
+  
+  * lib/og/relation/many_to_many.rb: alias to joins_many.
+  
+  * test/og/tc_store.rb: updated with join tests.
+  
+  * lib/og/manager.rb (#manage): add the ogmanager attribute here,
+  relation enchant after store enchant.
+  (#manage_classes): multipass enchanting to be more flexible.
+    
+  * lib/og/relation/joins_many: introduced,
+  implemented,
+  yeah it passes the test!
+  
+  * lib/og/relation.rb (#joins_many): introduced,
+
+13-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/mixin/hierarchical.rb: converted to new code.
+
+  * test/og/mixin/hierarchical.rb: converted to new code,
+  mostly works.
+  
+  * doc/RELEASES: updated.
+
+12-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sqlserver.rb (#initialize): small fix.
+
+  * test/og/tc_store.rb: refactored to run all tests.
+
+11-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/memory.rb (MemoryUtils): added to stay compatible
+  with the other backends.
+  
+  * lib/og/store/sql.rb (#reload): close the resultset.
+
+  * lib/og/entity.rb (#delete): fix.
+
+  * lib/og/store/sqlite.rb: passes tests,
+  added transaction_nesting support.
+  
+  * lib/og/store/sqlserver.rb: introduced,
+  reimplemented the minimum set of features needed for a project of mine.
+
+  * lib/og/store/mysql.rb (#create_table): fixed,
+  no transactions (nop).
+
+  * lib/og/store.rb (#delete): made more flexible,
+  added transaction_nesting support.
+  
+  * examples/run.rb: changes to make this pass.
+  
+  * lib/og/relation.rb (#resolve_target): handle no-namespace
+  case.
+  
+  * test/og/tc_relation.rb: implemented.
+
+10-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/collection.rb: totaly recoded to support lazyer synchronization
+  with the data-store,
+  don't extend from array,
+  use method missing to catch more methods.
+  
+  * README: added link for pure ruby mysql interface. [jbritt]
+  
+09-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sqlite.rb: kinda works :)
+
+  * lib/og/store/psql.rb (#read_all): fixed stupid and nasty bug.
+
+  * lib/og/relation/has_many.rb: fixed collection update.
+  
+08-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * examples/mysql_to_psql.rb: updated!
+  YEAH, it works.
+  
+  * lib/og/store.rb: :<< alias for save.
+  
+  * examples/*: copied from old og.
+  
+  * lib/og/store/psql.rb (#create_table): generate join tables.
+  
+  * lib/og/relation/many_to_many.rb (#enchant): implemented,
+  worked a LOT on the join table generation.
+  
+  * lib/og/store/sql.rb (#resolve_options): cleaned up,
+  handle join/join_condition options.
+  (#join): introduced.
+  (#join_table..): use key1, key2,
+  require yaml, needed.
+  
+  * replaced some OGTABLE's.
+
+07-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sql.rb (#read_all): (SqlUtils#table): implemented
+  (SqlUtils#join): nice implementation.
+  (#resolve_options): renamed from resolve_from, handles
+  all options.
+  (#find/#find_one): refactored.
+  
+06-05-2005  George Moschovitis  <gm@navel.gr>
+  
+  * lib/og/typemacro.rb (##VarChar): fixed.
+  
+  * lib/og/store.rb (#enchant): create finders for properties.
+    
+  * test/og/store/tc_psql.rb: use reload,
+  test generated finders.
+  
+  * lib/og/store/sql.rb (#read_all): small fix to make compatible
+  with mysql,
+  (#reload): generalized and added here,
+  fixed stupid bug.
+  
+  * lib/og/store/psql.rb: small updates.
+  
+  * lib/og/store/mysql.rb: introduced and started the 
+  implementation,
+  (Mysql::Result): adapted,
+  yeah, this store passes the tests.
+  
+05-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sql.rb (#find_one): parse all options,
+  set limit = 1 if not defined,
+  fixed limit,
+  (#find): parse :extra option,
+  fixed limit.
+  
+  * lib/og/mixin/orderable.rb: converted to latest code,
+  no stupid 1 = 1 scope.
+  
+  * test/og/mixin/tc_timestamped.rb: implemented.
+  
+  * lib/og/store/memory.rb (ObjectHash): use string keys.
+  (#initialize): read from the yaml file.
+  (#close): dump to the yaml file.
+  YEAH, serialization works,
+  (#query): added support for order.
+
+  * lib/og/entity.rb (#update): added support for selective
+  update.
+  
+  * lib/og/store/sql.rb (#update): handle case of updating
+  selected properties,
+  (#enable_logging): implemented.
+
+04-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/memory.rb (#update_properties): implemented.
+
+  * :where as :condition alias.
+  
+  * lib/og/entity.rb (#enchant): evaluate aliases for the 
+  primary key,
+  (#update): added
+  (##update_properties): added.
+  
+  * lib/og/store/sql.rb (#update_properties): implemented,
+  use @ in variables.
+
+  * lib/og/store.rb (#update_properties): introduced.
+  
+  * converted many files to make compatible with facets 0.7.1
+
+03-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store.rb: factored out code from sql.rb, memory.rb
+  
+  * lib/og/mixin/orderable.rb: use aspects for callbacks.
+  
+  * test/og/mixin/*: copied tests from old version.
+  
+  * lib/og/manager.rb (#manage_classes): improved.
+  
+  * lib/og.rb: cleaned up, removed older code.
+  
+  * lib/og/relation/belongs_to: set descendants, only here needed.
+
+  * lib/og/relation/*: use RefersTo as the basis relation.
+  
+  * lib/og/entity.rb (#count): implemented.
+  (##transaction): implemented,
+  (##delete): implemented.
+  
+  * pass the class as an option to many methods.
+  
+  * lib/og/store/memory.rb (#count): implemented,
+  improved condition handling in count and query,
+  (#delete): works with descendants,
+  use og_delete.
+
+  * lib/og/store/psql.rb (#first_value): implemented.
+  
+  * lib/og/store/sql.rb (#count): implemented,
+  fixed signature of methods,
+  (#og_delete): implemented.
+  (#delete): use og_delete.
+  
+02-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/memory.rb: introduced,
+  (#og_insert): implemtented,
+  (#og_update): implemented,
+  I got insertions working,
+  (#query): implemented!
+  Incredible, the memory store passes all tests.
+  
+01-05-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sqlite.rb: implemented the rest of the
+  functionality,
+  (#eval_og_insert): implemented.
+  
+  * lib/og/store/psql.rb: override PGresult,
+  (#each_row): implemented.
+
+  * lib/og/store/sql.rb: removed resultset methods,
+  (#read_all): use each_row.
+  (#find_one/all): use new read methods.
+
+30-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/psql.rb: shorter query/select.
+
+  * lib/og/store/sql.rb (SqlUtils): renamed from SqlStoreUtils.
+  (#result_blank?): implemented,
+  (#result_get): implemented,
+  (#result_close): implemented,
+  (#read_one): implemented, also handles join,
+  (#read_join_relations): implemented.
+
+  * lib/og/relation.rb (#resolve_target): supports the no
+  forward declaration trick.
+  
+  * lib/og/entity.rb (#const_missing): added trick, no need for
+  forward declarations [mneumann].
+
+29-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sqlite.rb (#create_table): implemented,
+  (#create_column_map): implemented.
+  
+  * lib/og/relation/many_to_many.rb: introduced.
+
+  * lib/og/relation/refers_to.rb: implemented as extension of
+  has_one.
+
+  * lib/og/relation/belongs_to.rb: reimplemented as extension of
+  has_one.
+  
+  * lib/og/relation/has_one.rb: implemented.
+  
+  * lib/og/relation.rb (#init_options): handle plural/singular,
+  further cleanup of the relation code,
+  even more cleanup, moved init_options code to the Relation
+  constructor,
+  totaly removed RelationMacros::Utils.
+
+28-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/relation/has_many.rb: some refactoring.
+
+  * lib/og/relation.rb (Relation::Utils): introduced,
+  (#init_options): implemented.
+  (#method_missing): access the options as methods.
+
+  * lib/og/typemacros.rb: copied from old.
+
+  * test/og/store/psql.rb (#test_conversions): added.
+
+  * lib/og/store/sql.rb (SqlStoreUtils): refactored.
+  (#quote): ultraclean implementation.
+
+  * lib/og/store/psql.rb: no custom transaction methods.
+  
+26-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/sql.rb: added some escape/parsing methods.
+
+  * lib/og/store/sqlite.rb: introduced.
+
+  * lib/og/psql.rb (#join_all): implemented.
+  (#reload): implemented.
+
+  * copied various support files from old Og.
+
+25-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * yeah I got a simple eager relation working.
+
+  * lib/og/psql.rb (#join_one): implemented.
+
+  * lib/og/sql.rb (#find): join clause calculation.
+  (#read_prop): use offset.
+
+  * lib/og/relation/belongs_to.rb: updated to latest code.
+  precalculate stuff.
+
+  * lib/og/relation.rb (#relations): implemented,
+  (#inspect_relation): implemented.
+  extend from Hash, not Flexob.
+  set setter.
+  use inflector to inflect relation names.
+
+  * yeah i got my blog up using the new Og.
+
+  * lib/og/mixin/*: copied from old.
+
+  * replaced the original implementation.
+
+  * lib/og/manager.rb (#manage): def ==,
+  (#manageable_classes): improved detection.
+
+  * lib/og/collection.rb (#clear): added.
+  (#delete): added.
+
+  * lib/og/entity.rb (#transaction): added.
+  (#find, #find_one): made options optional
+  cleaned up.
+
+24-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * relation  caching also works.
+
+  * yeah I got an 'active' collection working. 
+
+  * lib/og/relation/has_many.rb (#add_entity): implemented.
+  reloading option works.
+
+  * lib/og/collection.rb: overload array methods.
+  (#initialize): pass adder method.
+
+  * lib/og/store.rb (#unsaved?): implemented.
+
+  * lib/og/store/sql.rb (#find_one): fixed duplicate query.
+
+  * lib/og/entity.rb (#create): added, takes block.
+  (#primary_key): more fault tolerant.
+
+23-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/entity.rb: add [] in class,
+  load, find, find_first and aliases.
+
+  * lib/og/relation/has_many.rb (#enchant): implemented,
+  (HasManyCollection): introduced.
+
+  * don't use property.name.
+
+  * test/og/store/tc_psql.rb: implemented.
+
+  * lib/og/store/sql.rb (#og_read): greatly simplified.
+  (#find): implemented,
+  (#find_one): implemented.
+
+  * lib/og/manager.rb (#setup): honour :destroy.
+
+  * lib/og/store/psql.rb: added many methods from the old
+  adapter.
+  (og_insert): works!
+  (#create_column_map): introduced.
+  (og_read): yeah, it works!
+  (#close): added,
+  (#read_all): added.
+
+  * lib/og/store.rb (#enchant): call lifecycle method compilers.
+  (#close): added.
+
+22-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/filesys.rb (#enchant): use less evals.
+
+  * lib/og/store/sql.rb: started implementing,
+  (#create_table/#drop_table): introduced.
+  added typmap support.
+
+  * lib/og/store/psql.rb: started implementing.
+  (#create_table): implemented.
+  (#enchant): no evals,
+  add saved?
+
+  * I got enchanting working.
+
+  * lib/og/store.rb (#reload): introduced,
+  (#enchant): set og_store,
+  add index macro.
+  
+21-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/store/filesys.rb: introduced,
+  (#create, #destroy): implemented.
+  after many changes, got something working.
+  (#destroy): use rm_rf.
+  use OGNAME,
+  dont remove leading module from OGNAME.
+  (#path): helper.
+  (#delete): implemented.
+
+  * lib/og/store/psql.rb: introduced.
+
+  * lib/og/store/sql.rb: introduced.
+
+  * lib/og/relation/belongs_to (#enchant): full.
+
+  * YEAH, added support for different primary keys.
+
+  * lib/og/collection.rb: introduced.
+
+  * lib/og/errors.rb: introduced,
+  (StoreException): introduced.
+
+  * lib/og/manager.rb: introduced.
+  (#managable_classes): implemented.
+  (EntityInfo): introduced.
+
+  * test/tc_og.rb: reintroduced.
+
+  * lib/og/relation: introduced.
+
+  * lib/og/store.rb: introduced,
+  unified store/connection.
+
+  * lib/og/mixin: introduced.
+
+  * lib/og/entity.rb: introduced.
+  (EntityMixin): introduced.
+  (Entity): introduced.
+  (InstanceMethods): introduced.
+  (ClassMethods): introduced.
+  (#resolve_primary_key): implemented.
+
+  * started working on new implementation.
+
+20-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/enchant.rb (#self.update): gets oid argument.
+
+19-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/meta.rb: started using facets :)
+
+  * Rakefile: added facets dependency.
+
+16-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * --- VERSION 0.16.0 ---
+
+  * lib/og/mixins/timestamped.rb: implemented with aspects.
+
+15-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * test/og/observer.rb: removed, use Aspects instead.
+
+  * lib/og/observer.rb: removed, use Aspects instead.
+
+14-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lb/og/adapters/*: converted to the latest adapter interface.
+
+  * lib/og/adapters/base.rb (#eval_og_update): use aspects instead of
+  callbacks/observers,
+  (#eval_og_insert): use aspects,
+  set aspects in the base adapter code,
+  (#eval_og_read): use aspects.
+
+13-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/adapters/*: use klass.allocate instead of klass.new to avoid
+  restrictions on initialize methods. [jamesb]
+
+  * test/og/*: moved adapter test code to the adapters dir.
+
+12-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * Rakefile: updated to support autoupload to Rubyforge. [flgr]
+
+11-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * created new public SVN repository, to allow for easier
+  patching by the community.
+
+  * lib/og/mixins/timestamped.rb: introduced.
+
+  * lib/og/database.rb: set default connection_count > 1 to avoid
+  deadlocks.
+
+10-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * test/*: many changes to make all run again.
+
+  * lib/og/adapters/sqlserver.rb: fix.
+
+  * lib/og/database.rb (Og##connect): added helper.
+
+  * lib/og/meta.rb: small fix.
+
+08-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * hack-fixed dynamic require bug that used to fuckup RDoc.
+
+  * Rakefile: bumped required ruby version,
+  VERSION fix.
+
+  * code cleanup.
+
+  * MAJOR: fixed refs to  N.
+
+06-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/adapters/*: all reuse the base now.
+
+  * lib/og/connection.rb: removed.
+
+  * lib/og/adapter.rb: removed.
+
+  * lib/og/adapters/base.rb: introduced, 
+    copied code from adapter.rb and connection.rb
+
+  * lib/og/errors.rb: introduced, moved SqlException here.
+
+04-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * --- VERSION 0.15.0 ---
+
+  * examples/run.rb: small fix.
+
+  * test/og/mixins/tc_tree.rb: removed.
+
+  * test/og/mixins/tc_list.rb: removed.
+
+03-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * doc/RELEASES: updated.
+
+  * lib/og/backend.rb: removed.
+
+  * test/og/mixins/tc_hierarchical: implemented,
+  dont use article.
+
+  * lib/og/mixins/orderable.rb: fixed 1=1 scope.
+
+  * lib/og/mixins/hierarchical.rb (Hierarchical): implemented,
+  (#add_child): implemented.
+  after some fixes, it works!!
+  fixed 1=1 scope.
+  added :root.
+  
+02-04-2005  George Moschovitis  <gm@navel.gr>
+  
+  * lib/og/typemacros.rb: small update.
+
+  * test/og/mixins/tc_hierarchical: introduced.
+
+  * lib/og/mixins/hierarchical.rb: introduced,
+  (Hierarchical): introduced,
+  (NestedSets): introduced, 
+  added enchant methods for nested sets.
+
+  * lib/og/mixins/tree.rb: deprecated.
+
+01-04-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/adapters/sqlserver.rb: small fixes.
+
+  * doc/README: updated.
+
+  * doc/RELEASES: updated.
+
+  * doc/AUTHORS: updated.
+
+01-04-2005  Anastasios Koutoumanos  <drak@navel.gr>
+
+  * lib/og/adapters/sqlserver.rb: implemented.
+
+  * test/og/tc_sqlserver.rb: implemented.
+
+31-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/mixins/orderable.rb: implemented using dynamic_include.
+
+  * lib/og/meta.rb: removed inclusion of Og::List.
+
+  * lib/og/mixins/list.rb: deprecated in favour of the superior implementation.
+
+31-03-2005  Anastasios Koutoumanos  <drak@navel.gr>
+
+  * lib/og/adapters/oracle.rb: removed duplicate eval_og_oid.
+
+28-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * --- VERSION 0.14.0 ---
+
+  * test/og/mixins/tc_list.rb: implemented tests.
+
+  * lib/og/connection.rb (#delete): passs obj_or_oid to the callback.
+
+  * lib/og/enchant.rb (#update/#update_all): fixed stupid bug.
+  (#delete!): pass self.
+
+  * lib/og/mixins/list.rb: set the position property for the
+  enchanted object,
+  (#move_to_top): fixed. 
+  (#increment_position_of*/dec*): fixed,
+  fixed scope interpolation.
+  
+27-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/database.rb: wrap transaction.
+
+  * lib/og/enchant.rb (#each): fixed.
+
+  * lib/og/meta.rb (#has_many): added :order and :sql options.
+  include Og::List by default to Module.
+
+  * lib/og/mixins/list.rb: added some code,
+  (#decrement_position_of..): added,
+  add callbacks to enchanted object,
+  made compatible with meta, 
+  use pre_insert,
+  many, many small fixes to make this work.
+  
+  * test/og/mixins/tc_list.rb: introduced.
+
+24-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/adapters/*: rescue binding require. [drak]
+
+  * lib/og/enchant.rb: fixed many bugs to make this run again.
+
+23-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/testing: introduced.
+
+  * test/mixins/tc_list.rb: introduced.
+
+  * test/mixins: introduced.
+
+  * lib/og/mixins/list.rb: introduced.
+  (#move_higher/lower): implemented.
+  (#increment/decrement_position): implemented.
+  implemented many methods.
+
+  * INSTALL: updated, added ref to required libs. [dyoder]
+
+  * lib/og/adapter.rb (SqlException): introduced.
+
+  * lib/og/connection.rb (#handle_db_exception): factored out,
+  update_property alias.
+
+  * lib/og/adapters/* (#exec/query): return :error on error
+  and add support for raising exceptions,
+  use handle_db_exception,
+  added get_row helper method.
+
+  * lib/og.rb: added raise_db_exceptions flag. [mneumann]
+
+  * test/tc_og.rb: added tests.
+
+  * lib/og/enchant.rb (#reload): implemented [mneumann],
+  update_property alias.
+  (#set_property): introduced.
+  (#update_all): implemented.
+  (#transaction): implemented.
+
+  * lib/og/adapter.rb (#og_read): tupple defualt is 0.
+
+22-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/adapter.rb (#create_db): set create_schema = true. [danjover]
+
+  * lib/og/meta.rb (#has_many): accepts tree option.
+
+  * lib/og/tree.rb (TreeTraversal): introduced.
+
+  * test/og/tc_tree.rb: introduced.
+
+21-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/tree.rb: Introduced Tree mixin.
+
+20-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/meta.rb: experimented with const_missing hack.
+
+  * test/og/tc_automanage.rb: implemented.
+
+  * lib/og/database.rb (#auto_manage_classes): added, to automanage
+  classes defined after Database definition. [james_b]
+
+19-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/database.rb (#initialize): handle drop_db config parameter.
+
+  * lib/og/tree.rb: implemented nested intervals tree traversal
+  helper methods,
+  fix in parent,
+  yeah! the hierarchy is stored.
+
+18-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * Research about nested interval sql tree traversal.
+
+17-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * --- VERSION 0.13.0 ---
+
+  * Rakefile: updated.
+
+  * test/*: changes to make the tests pass again.
+
+15-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * README: updated.
+
+12-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og/validation.rb: introduced,
+  (#validate_unique): implemented,
+  (#validate_related): implemented.
+
+10-03-2005  George Moschovitis  <gm@navel.gr>
+
+  * lib/og.rb: removed Name.
+
+  * install.rb: updated for Og.
+
+  * INSTALL: updated for Og.
+
+  * Rakefile: updated, removed nitro dependencies.
+
+  * CHANGELOG: splitted from the Nitro ChangeLog.

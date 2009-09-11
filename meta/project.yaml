@@ -1,0 +1,19 @@
+title  : Og
+author : George K. Moschovitis
+brief  : State of the art object-relational mapping system.
+description:
+  Object Graph (Og) is a state of the art ORM system.
+  Og serializes standard Ruby objects to Mysql, Postgres, Sqlite,
+  KirbyBase, Filesystem and more.
+
+homepage: "http://www.nitroproject.org"
+
+document: true
+
+dependency:
+  - [ glue, = 0.50.0 ]
+
+index_file: main.rb
+
+lib_path:
+  - lib/og

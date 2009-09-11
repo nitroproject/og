@@ -1,0 +1,23 @@
+= Og Examples
+
+Here you can find some simple Og examples. For more examples 
+please download the Nitro examples tarball. Nitro is a Ruby
+Web Framework that uses Og.
+
+
+== run.rb
+
+A simple example that demonstrates some Og features. The example
+automatically creates a 'test' database.
+
+
+== mock_example.rb
+
+Demonstrates how easily the Og infrastructure can be mocked,
+for easy test unit writing.
+
+
+== mysql_to_psql.rb
+
+Demonstrates how easy it is to migrate a mysql database
+to postgres using Og.

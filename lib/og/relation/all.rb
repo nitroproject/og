@@ -1,0 +1,6 @@
+require 'og/relation/belongs_to'
+require 'og/relation/has_many'
+require 'og/relation/has_one'
+require 'og/relation/joins_many'
+require 'og/relation/many_to_many'
+require 'og/relation/refers_to'

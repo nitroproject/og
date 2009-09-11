@@ -1,0 +1,71 @@
+MAIN DEVELOPER:
+
+* George Moschovitis <george.moschovitis@gmail.com>
+  Project leader, architecture and design, main coder, 
+  documentation, maintainer.
+  
+IDEAS, ADDITIONAL CODING, SUPPORT:
+
+* Jonathan Buch <jonathan.buch@gmail.com>
+  Patches.
+  
+* Fabian Buch <fabian@fabian-buch.de>
+  Patches.
+
+* Michael Fellinger <m.fellinger@gmail.com>
+  Patches, bug fixes.
+
+* Judson Lester <nyarly@gmail.com>
+  Patches.
+    
+* Rob Pitt <rob@motionpath.co.uk>
+  Patches, Bug fixes.
+  
+* Brian Davis <brian.william.davis@gmail.com>
+  Patches
+      
+* Ysabel <deb@ysabel.org>
+  Refactoring, patches.
+
+* Thomas Sawyer <transfire@gmail.com>
+  Refactoring, patches, code cleanup.
+
+* Guillaume Pierronnet <guillaume.pierronnet@laposte.net>
+  Tons of patches.
+
+* Michael Neumann <mneumann@ntecs.de>
+  Design, additional coding and bug reports.
+
+* Aleksi Niemela <Aleksi.Niemela@cs.helsinki.fi>
+  Bug reports and patches.
+  
+* Julien Perrot <jperrot@exosec.fr>
+  Bug reports and patches.
+
+* Ghislain Mary <gmary@lunacymaze.org>
+  Bug reports and patches (sqlite3 driver).
+
+* Dirk Barnikel <dirk.barnikel@gmx.de>
+  Initial Revisable code.
+  
+* Dylan Bruzenak <dylanb@digitalvalence.com>
+  Patches (kirby).
+
+* Matt Bowen <matt.bowen@farweststeel.com>
+  Old Oracle driver, documentation.
+
+* Aidan Rogers <aidan@infurious.com>
+  Bug reports, patches.
+
+* Darrick W <darrick@innatesoftware.com>
+  Patches.
+
+* Mark Van De Vyver, <mvyver@gmail.com>
+  Patches.
+  
+* Anastasios Koutoumanos <ak@navel.gr>
+  Design, additional coding.
+    
+* Thomas Quas <tquas@yahoo.com>
+  Ideas, bug reports, unit tests.
+

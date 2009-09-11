@@ -1,0 +1,1324 @@
+== Version 0.42.0
+
+Another evolutionary release.
+
+== Version 0.41.0
+
+This is a bug fix release. As it fixes some important bugs of the
+previous release, including a DOS vulnurability you are strongly
+advised to update your version. However, you will also find 
+a new feature:
+
+* Extended entity .finder method can now handle relations.
+
+  Post.find_by_title_and_forum_name(title,forumName)
+  
+  class Forum
+    property :name, String
+    has_many :posts, Post
+  end
+  
+  class Post
+    property :title, String
+    property :message, String
+    belongs_to :forum, Forum
+  end
+  
+  'forum' is the :forum from belongs_to, 'name' is a property from the
+  relations.  It creates a SQL subquery to find the correct forum_oid.
+
+
+== Version 0.40.0
+
+This is the biggest release yet! Tons of new wonderful features,
+code refactoring, bug fixes, documentation improvements and so
+much more.
+
+Special thanks for this release fly to Jonas Pfeniger, 
+Jonathan/Fabian Buch and Michael Fellinger.
+
+Most notable changes:
+
+* Fully transparent Og managed objects. No need to use the 
+  special property notation. Just use the standard attr_accessor
+  macro:
+  
+  class User
+    attr_accessor :name, String, :sql => 'VARCHAR(32)
+    attr_accessor :password, String
+    attr_accessor :age, :login_count, Fixnum
+  
+    belongs_to :group
+    has_many :comments
+    joins_many :categories
+  end
+  
+  Og automatically detects and manages this class!
+  
+* The Og adapter model was re-engineered from scratch. The new
+  adapter code is better refactored. It is now extremely easy to
+  write new adapters for various RDBMS systems.
+  
+* Og build mode. This avoids multiple sql queries when you are
+  'building' (ie attaching related objects) a new object.
+
+* You can now easily lookup Og entities by name:
+
+  u = User[1] # classic
+  
+  or
+  
+  u = User['gmosx'] # this works as well!
+  
+  for the new method to work you need to annotate the attribute
+  to use for named lookups:
+  
+  class User
+    attr_accessor :name, String, :key => true
+    ..
+  end  
+
+* Og set attribute, a nice helper to set only some attributes.
+
+  b = Book[1]
+  b.set_attribute :title => 'Hello' # updates only title in the DB
+  b.instance_attribute_set '@title', 'Hello' # Ruby style
+  b.set_attributes :title => '1', :hits => 3
+
+* Many more bug fixes and smaller improvements.
+
+== Version 0.30.0
+
+Another pragmatic release. The Nitro development team worked over
+the submitted tickets and provided many bug fixes. More over, there
+are many small improvements along the codebase and as always
+we could not resist adding some cool new features. 
+
+Special thanks fly to Bryan Sotto for making this release
+possible!
+
+Most notable chages:
+  
+* Added Og query by example support. Query the database for an 
+  entity that matches the example. The example is a hash 
+  populated with the property values to search for.
+
+  The provided property values are joined with AND to build
+  the actual query.
+
+  Article.query_by_example :title => 'IBM%', :hits => 2
+  Article.find_with_properties :title => 'IBM%', :hits => 2
+
+* Added type casting support for Og aggregations and
+  calculations.
+      
+* Added many more RDoc comments to the source code.
+  
+* Many, many bug fixes.
+
+* Updated to latest Facets.
+
+Please note that the project home page has been moved to:
+
+http://www.nitroproject.org
+
+
+== Version 0.29.0
+
+A bold step towards maturity. Great care was taken to 
+fix reported bugs and fine tune many aspects of Og.
+As always some great new features where added. Special thanks fly
+to Jonas Pfenniger, Bryan Sotto, Rob Pitt and Guillaume 
+Pierronnet for making this release possible.
+
+Most notable changes:
+
+* Og now supports calculations and aggregations. Here are some
+  examples:
+
+  User.min(:age)
+  User.average(:age)
+  User.maximum(:age)
+  User.min(:age, :group => :profession) # => [..] (aggregation)
+  User.sum(:age, :group => :role) # => [..]
+  
+  and more!
+  
+* Improved Taggable mixin, now provides more helpers and supports
+  tag garbage collection through reference counting.
+  
+* Added a new store for the generalized caching system that is
+  backed by a MemCache server. Useful to extract the last ounch 
+  of performance in a production environment. 
+
+* Many Og bug fixes and optimizations.
+
+* Many, many bug fixes and small improvements throughout the
+  code.
+
+
+== Version 0.28.0
+
+A snapshot of the latest developments. As always, cool new 
+features were added, the code is refactored, the security increased
+and reported bugs fixed.
+
+Most notable changes:
+
+* New generalized caching system. The caching code is refactored
+in a new Glue system. At the moment, caches in memory, DRb, 
+filesystem and Og are provided. A memcache version will be available
+in the near future. The new caching system is used to implement
+Session stores, Og caching, Fragment caching, and Application scoped
+parameters. A useful DRb cache management script is provided to 
+manage multiple DRb caches.
+
+* Introduced a new Og Cacheable mixin. By including this mixin
+in your classes you make them eligible to Og caching. Here comes
+an example:
+
+class User
+  is Cachable
+  property :name, String
+  property :age, Fixnum
+end
+
+Cacheable reuses the new generalized caching system to provide
+various options for distributed caching. At the moment entities
+(instances of managed classes) are cached by their primary key.
+
+* Og now advanced quering using Ruby as the data query language 
+to complement the usage of Ruby as a data definition language 
+and provide an end-to-end Ruby solution. At the moment only 
+supported for the SQL based adapters. Here comes an example:
+
+  users = User.find do |user|
+    user.age > 10
+    user.any { 
+      name == 'George'
+      name == 'Stella'
+    }
+  end
+
+  # => SELECT * FROM oguser WHERE (oguser.age > 10 AND (oguser.name = 'George' OR oguser.name = 'Stella'))
+
+This feature uses the Caboose/EZ code by Ezra. Pure magic!
+
+* Og find now supports prepared statement like syntax:
+
+  User.find :condition => ['name LIKE ? and create_time > ?', 'g%', Time.now]
+  
+The interpolated values are automatically escaped to avoid
+SQL injection attacks.
+
+Some additional forms of find are supported:
+
+User.find [['name = ? and create_time > ?', 'gmosx', Time.now]
+User.find "name = 'gmosx'"
+
+and more.
+
+* Added experimental support for  deep copying (cloning) of Og 
+managed objects. This mechanism handles properties (annotated 
+attributes) and some relation types.
+
+* Integration of Facets 1.0.1. The new library features a better
+API and better implementation of various features.
+
+* Added schema evolution support to the SQLite adapter. All major
+Og adapter support automatic schema evolution, ie Og detects common
+types of changes in your Ruby code to automatically alter the 
+underlying schema  for you.
+
+* Introduced Og SQLite2 (legacy SQLite) adapter.
+
+* Added more test cases, and improved RDoc comments throughout
+the code.
+
+* Many, many bug fixes.
+
+
+== Version 0.27.0
+
+Once again we have a great mix of cool new features, along
+with bugfixes and a myriad of smaller improvements. Go and
+download the most advanced Ruby ORM Framework you can find.
+
+Most notable changes:
+
+* Og live collections support accumulation. Here is an example:
+
+  class Category
+    has_many :projects
+  end
+  
+  class Project
+    has_many :clients
+  end
+  
+  class Client
+  end
+  
+  clients = category.projects.clients 
+  
+  # => returns all clients for this category!
+
+* New WebFile system. Uploading files and handling photos was
+  never easier:
+  
+  class Photo
+    is Timestamped
+    is Taggable
+    property :title, String
+    property :file, WebFile, :magick => { :small => '64x64', :medium => '128x128' }
+  end
+
+  # the upload action
+  
+  def upload
+    photo = Photo.assign(request)
+    photo.save  
+  end
+  
+  This saves the photo, and creates 2 thumbnails. You can easily 
+  access the photo and thumbnails like this:
+  
+  <img src="#{photo.file_medium_thumbnail}" />
+  <img src="#{photo.file_small_thumbnail}" />
+  
+  ie obj.{propertyname}_#{thumbname}_thumbnail
+
+* Improved the generated RDOC comments.
+
+* Added evolution support to the KirbyBase adapter.
+
+* Added setup.rb for non-gem installation.
+
+
+== Version 0.26.0
+
+This is the release with the most community contributions. Check 
+out the great new stuff. Download now!
+
+Most notable changes:
+
+* New CacheSweeper mixin. Using this mixin allows you to keep
+  the cache cleaning logic in one place. This logic is called
+  automagically by many default Nitro/Og methods (for example
+  Og insert/update, scaffolding, etc). You can fully customize
+  the behaviour.
+  
+  class Article
+    include CacheSweeper
+    
+    def expire_affected(action = :all)
+      expire_affected_output('articles/view')
+      ...
+    end
+  end
+  
+  a = Article[1]
+  a.title = 'New'
+  a.save # => calls expire_affected.
+  
+* Searchable mixin. Include this mixin to your classes to make
+  them searchable by the auto administration system.
+  
+* Better validations implementation. Cleaner code, less evals,
+  more flexible and easier to extend.
+   
+* New scaffolding / auto administration system. The implementation
+  is much cleaner and easier to customize. It leverages the latest
+  advancements (dispatcher, sweeper, etc) and adds search support,
+  pager, breadcrumps and more. You can define your own controls 
+  to handle properties and relations. Stay tuned for more stuff 
+  in the near future.
+
+* New Og revisable mixin. Just include this mixin in your classes
+  and get db backed revision support for free. Here comes an
+  example:
+  
+  class Article
+   is Revisable
+   property :body, String, :revisable => true
+   property :title, String
+  end
+
+  Automatically generates the Revision class (and the 
+  backend schema):
+ 
+  class Article::Revision
+ 
+  article.revisions
+ 
+  article.revise do |a|
+    a.title = 'hello'
+    a.body = 'world'
+  end
+ 
+  article.rollback(4)
+
+* Bug fixed KirbyBase Og adapter. This works great with the
+  new 2.5 gem.
+
+* Added more rational defaults, and many predefined options to
+  minimize the amount of setup needed to get your app running. Of
+  course you can still customize just about everything in Nitro.
+
+* Improvements to PostgreSQL automatic generation of foreign key 
+  constraints.
+
+* Added evolution support to the MySql store.
+
+* Many, many, many bug fixes and smaller improvements.
+
+
+== Version 0.25.0
+
+This is the first in a series of releases focused on stability 
+and refinement. Many bugs where fixed, the high level api was 
+improved where needed, and we still got some small but incredibly
+useful new features. Enjoy!
+
+Most notable changes:
+
+* Support for constrained / scoped queries in Og, here are
+  some examples:
+  
+  User.with_scope(:condition => 'age > 2') {
+    users = User.all
+  }
+  
+  Users.articles.find "title LIKE %t%" # => constrain i users articles.
+  
+* Dynamic auto generators, you can now query the database in
+  English:
+  
+  User.find_by_name_and_age('gmosx', 'age')
+  User.find_or_create_by_name_and_age(...)
+  
+* Added experimental version of a new schema evolution system. Assuming 
+  evolve_schema = true and evolve_schema_cautious = false
+
+  * With this patch, on application startup, fields are added and deleted.
+  * During run-time, if the file containing Og.setup is touched, fields are added.
+  * Fields are _not_ deleted during run-time, only at application startup.
+
+  a the moment this works only in the PostgreSQL store, support for more
+  stores is coming in the next versions. Thanks to Rob Pitt and Bryan Sotto 
+  for this feature.
+
+* Added some useful helpers to make the code you write cleaner,
+  here are some examples:
+  
+  class Article
+    is Taggable
+    
+  instead of
+  
+  class Article
+    include Og::Taggable
+    
+  and stuff like that...
+    
+* General code cleanup and refactoring.
+
+* Many, many bug fixes, including security fixes.
+
+
+== Version 0.24.0
+
+A snapshot of the latest developments. This version features
+many requested features and many many smaller features and
+bug fixes.
+
+Most notable additions:
+
+* Totaly recoded annotation / property system. The property
+  system is now based on Facet annotations and inheritors.
+  You can now annotate every object, attribute or method
+  in Nitro. For example you can annotate your actions with
+  routing rules or sitemap strings etc, etc. One unified
+  system for annotations and metadata is used throughout
+  the whole Framework.
+
+* Implemented one of the most requested features. An Og
+  frontend for KirbyBase. The KirbyBase store does not yet
+  support all features, but is really useful. For example
+  it can power the Spark wiki example. Switching between
+  KirbyBase, Mysql, Postgres, Sqlite, etc by changing
+  one line of code is really cool ;-)
+  
+* Better Seperation of Concerns for Og managed classes. Og
+  can now annotate and handle classes from other libraries.
+  Lets say you have the following class:
+  
+  class User
+    attr_accessor :name
+    attr_accessor :body
+  end
+  
+  Using Ruby's open classes and Nitro's advanced annotation
+  system you can easily prepare this class for Og management
+  
+  class User
+    ann :user, :klass => String
+    ann :body, :klass => String
+  end
+  
+  or even better:
+  
+  class User
+    property :user, String
+    property :body, String
+  end
+  
+  This style promotes SOC: You define your classes in one
+  place and annotate them for Og in another place.
+  
+* Simple Og automatic evolution system. Lets say you have a class Article
+
+  class Article
+    property :title, String
+    property :nbody, String
+    property :dumy, Fixnum
+  end
+  
+  lets you want to change your 
+  class to this one:
+
+  class NewArticle
+    property :ntitle, String
+    property :nbody, String
+    property :new, Float
+  end
+
+  First you export the database:
+  
+  og.export
+
+  Then you import the database. Some rules
+  are needed when renaming classes or properties. 
+  New properties or deleted properties are handled
+  automatically.
+
+  rules = {
+    :Article => {
+      :self => :NewArticle, # rename the class
+      :title => :ntitle,
+      :body => :nbody
+    }
+  }
+  og.import :evolution => rules
+
+  Thats all. In a future version this will be integrated into
+  the default runner scripts.
+
+* Og helpers to create simple rdbms management scripts. Here 
+  is an example:
+
+  mysql "-u root -p", <<-END
+    drop database if exists weblog_development;
+    create database weblog_development;
+    grant all on weblog_development.* to #{`id -un`.strip}@localhost;
+  END
+  
+  At the moment this is only available for Mysql.
+
+* Cleaned up Og implementation.
+
+* Fixed minor Ruby 1.8.3 compatibility issues.
+
+* Even better integration with Ruby Facets.
+
+* Tons of bug fixes and small but useful features.
+
+
+== Version 0.23.0
+
+The summer vacations are over and there is a brand new Nitro 
+release. There is a preview of the new Scaffolder (also handles
+Og relations), lots of small features and improvements and many bug
+fixes. Moreover the code has been restructured to utilize the 
+excellent Nano/Mega project as the support library.
+
+Most notable additions:
+
+* Scaffolding reloaded. The scaffolding infrastrucure is 
+reimplemented to generate more flexible code. The automatically
+generated forms allow for visualisation and editing of 
+Og relations suchs as HasMany and BelongsTo.
+
+Morover, an experimental admin component is provided. Just add the
+line 
+
+require 'part/admin'
+
+and surf
+
+http://www.mysite.com/admin
+
+To enter a simple administration screen. This feature is 
+considered a preview and will be improved in a future version.
+
+* Introduced Og Taggable mixin. It was never easier to add
+tagging to your appplication.
+
+  class Article
+    include Og::Taggable
+    ..
+  end
+
+  article.tag('great', 'gmosx', 'nitro')
+  article.tags
+  article.tag_names
+  Article.find_with_tags('great', 'gmosx')
+  Article.find_with_any_tag('name', 'gmosx')
+
+  t = Article::Tag.find_by_name('ruby')
+  t.articles
+  t.articles.count
+
+For an example usage of this Mixin, consult the Spark sources.
+
+* Added support for 'evolving' a single Og managed class. Useful
+when you are in development mode and change your schema.
+
+* Many many small bug fixes.
+
+
+== Version 0.22.0
+
+A snapshot of the latest developments. Many requested features
+where implemented, and many reported bugs fixed.
+
+* The much requested Og 'reverse mode' is implemented. Og's 
+domain specific language and API is extended to allow fine-grained 
+customization of the schema-to-objects mapping. Og can now handle 
+most of the legacy schemas you can throw at it. Here is an 
+example:
+
+class User
+  property :name, String, :field => :thename, :uniq => true
+  property :password, String
+  property :age, Fixnum, :field => :age3    
+  has_many Comment, :foreign_field => :user
+  set_table :my_users
+  set_primary_key :name, String
+end
+
+class Comment
+  property :cid, Fixnum
+  property :body, String
+  belongs_to User, :field => :user
+  set_table :my_comments
+  set_primary_key :cid
+end
+
+As you can see, even relation fields can be customized. For 
+higher level customization you can overload methods like #table,
+#field_for_property etc.
+
+* Og now handles multiple connections to multiple stores even 
+in thread safe mode. This means you can now have objects serialized
+in different RDBM systems in the same application. Or you can have
+some objects managed by an RDBMS store and others by a FAST 
+in-memory store. You can still have relations between objects in
+different stores. An example:
+
+mysql = Og.setup(:store => :mysql, ..)
+psql = Og.setup(:store => :psql, ..)
+
+class User
+  has_many Comment
+end
+
+class Comment
+  belongs_to User
+end
+
+mysql.manage_class User
+psql.manage_class Comment
+
+user.comments << comment
+
+* Greatly improved support for testing and test-driven-development.
+Support for Og fixtures and automatic test database
+setup is provided. Fixtures can be defined with yml or csv files.
+
+For an example of the testing infrastructure check out the 
+Spark 0.4.0 sources. Spark is a Wiki powered by Nitro.
+
+* Many smaller changes and feature implementations that make
+development with Og so much more pleasurable.
+
+
+== Version 0.21.2
+
+This is a bug fix release. 
+
+
+== Version 0.21.0 was released on 25-07-2005
+
+Some great new features and a lot of fixes. Many patches were 
+contributed by the community to make this is a release you 
+will love!
+
+Some notable changes:
+
+* Og dynamic queries. You can inject caclulated or join attributes
+  to your objects. Here is an example:
+  
+  class Item
+    property :quantity, Fixnum
+    property :unit_price, Float
+    
+    def initialize(quantity, unit_price)
+      @quantity = quantity
+      @unit_price = unit_price
+    end
+  end
+  
+  Item.create 2, 3.0
+  item = Item.find_one :select => 'quantity*unit_price as total_price'
+  item.total_price # => 6.0
+  
+  Please note that total_price is a dynamically injected 
+  attribute. Now you can combine SQL's powerful query features
+  with the simplicity and elegance of Og.
+
+* Og customized join tables allows you to use any Ruby object
+  as the join relation between other objects. Here comes an 
+  example:
+  
+  class Category
+    property :title, String
+  end
+
+  class Article
+    property :title, String
+  end
+  
+  class ArticleToCategory
+    property :rate, Float
+    has_one Article
+    has_one Category
+  end
+  
+  c1 = Category.create
+  c2 = Category.create
+
+  a = Article.create
+  a.categories.add(c1, :rate => 2.3) 
+  a.categories.add(c2, :rate => 1.2) 
+
+  for c in a.categories
+    p a.category_join_data(c).rate
+  end
+  
+* Og collections size() is now optimized.
+
+* Og join code support refactoring. The new code is easier to read,
+  more customizable and generates more efficient code by default.
+
+* Updated the documentation.
+    
+* Fixed all reported or discovered bugs, many smaller 
+  improvements.
+
+
+== Version 0.20.0 was released on 12-07-2005.
+
+A bug fix release.
+
+Some notable changes:
+
+* Added better sql injection protection in Og sql stores.
+
+* Fixed Mysql store reconnect bug.
+
+* Og falls back to pure ruby adapters for Mysql and Postgres, to 
+  make it easier to run out of the box. Please, don't forget to 
+  switch to the natively compiled adapters for production sites.
+
+* :uniq keyword
+
+* fix for self join.
+
+* Many, many, many bug fixes and small improvements. This release
+  fixes all reported bugs in the spirit of out zero-bug tolerance
+  philosophy.  
+
+
+== Version 0.19.0 was released on 31/05/2005.
+
+Og reloaded part 2: Another superb release introducing a balanced 
+mix of innovative new features, common but useful stuff and bug 
+fixes. 
+
+Some notable changes:
+
+* Og polymorphic relations. A groundbreaking feature made possible
+  by Og's unique design and Ruby's power. Let's use an example 
+  to explain the concept:
+  
+  class Comment
+    ...
+    belongs_to Object # polymorphic marker
+  end
+  
+  class User
+    ...
+    has_many Comment
+  end
+  
+  class Article
+    ...
+    has_many Comment
+  end
+  
+  u = User.new
+  u.comments << User::Comment('Hello')
+  
+  a = Article.new
+  a.comments << Article::Comment('Wow!')
+  
+  User::Comment and Article::Comment where automatically created
+  by Og and are serialized in different tables (also automatically
+  created by Og). This is the  next step in DRY!
+
+* Og now supports inheritance using the well known Single Table
+  Inheritance pattern. Thanks to Og's advanced design the pattern
+  is fully encapsulated:
+  
+  class Document
+    ...
+    schema_inheritance
+  end
+  
+  class Article < Document
+    ..
+  end
+  
+  class Photo < Document
+    ..
+  end
+  
+  Document.all # => includes Articles and Photos
+  Article.all # => only Articles
+  
+  User.documents # => Articles and Photos
+  User.documents(:type => Photo) # => only photos.
+
+  Btw, this feature is orthogonal to the polymorphic relations
+  feature just described, giving the developer great 
+  flexibility.
+
+* Integrated an SQLite3 patch by Ghislain Mary.
+
+* Integrated PostgreSQL binary data patch by Michael Neumann.
+
+* Fixed all reported bugs.
+
+
+== Version 0.18.0 was released on 01/06/2005.
+
+Mainly a bug fix release. Many small improvements were 
+implemented. All reported bugs were fixed, as well as bugs found 
+during the deployment of a live application. For more information
+consult the detailed changelog. Thanks to Julien Perrot for small
+patches.
+
+Some notable changes:
+
+* Thread safe mode was added again in Og. This works nice with
+  the Webrick server.
+  
+* New order macro in Og to set default ordering for each
+  entity. The has_many collections respect the order setting.
+
+* Fixes in the SQLite adapter.
+
+* No warnings in the Posrgres adapter.
+  
+* Cleaned up some source files.
+
+
+== Version 0.17.0 was released on 16/05/2005.
+
+Og Reloaded!! A totally new, clean and elegant implementation 
+that supports tons of new advanced features. This version should
+be considered as a preview, but you really have to *try* this! 
+A new version, with the rest of the planned features and bug
+fixes is expected shortly. Many thanks to Michael Neumann and 
+the other hackers on the mailing list for ideas and suggestions 
+that made this version possible.
+
+Most notable additions:
+
+* Extremely clean source code. Better names are used thorougout.
+  Extra care was taken to make all features more orthogonal.
+  
+* Brand new relation mechanism. The 'enchanting' of entities 
+  (managed classes) happens in multiple passes to be more
+  flexible. Totaly separated graph/metadata creation and serialization
+  code generation. The Graph metadata can be used for advanced
+  scaffolding, testing and more.
+
+* Support for fully customizable primary keys. You are no longer
+  forced to use xxx_oid primary keys. Appart from the extra 
+  flexibility this feature provides this is an essential step
+  towards the planed 'reverse engineering' mode that will allow the
+  use of existing schemas with Og.
+  
+* More elegant inspection mechanism. Example:
+
+  Article.relation(:user) # => Og::BelongsTo(...)
+  Article.relations # => [...]
+  Article.properties # => [...]
+
+* Joins_many relation, as an alias for one way, join table relations.
+
+* Support for 'active' collections. Active collection are
+  synchronized with the backend Store and provide a more elegant
+  interface and the opportunity for 'session' caching:
+  
+  article.comments << Comment.new
+  
+  instead of 
+  
+  article.add_comment(Comment.new) # this is also allowed though.
+  
+  p article.comments
+  p article.comments.size # the results of the first query is cached
+
+* Eager relations.
+
+  comments = Article.comments(:include => User)
+
+  for comment in comments
+    p comment.user.name
+  end
+  
+  Elegantly solves the N+1 query problem by using one join
+  query.
+
+* No need for forward references when defining relations. Now,
+  the following code magically works:
+  
+  class User
+    has_many Comment # works even though Comment is not defined!
+  end
+  
+  class Comment
+    belongs_to User
+  end
+   
+* Use inflection where possible to infer missing configuration
+  options. For example
+  
+  class Article
+    belongs_to User # infects relation name :user
+    ...
+    
+* New, lean and mean Store interface. The code needed to teach 
+  Og how to  serialize objects to backend store is dramatically
+  reduced. The new interface is SQL agnostic, so non SQL-RDBM's 
+  stores are possible.
+  
+* SQL agnostic querying interface, compatible with non-sql 
+  Stores. Here is an example:
+  
+  Article.find(
+    :condition => 'hits > 2 AND rate > 3', 
+    :order => 'title',
+    :offset => 30,
+    :limit => 10
+  )
+
+* More elegant (and non-sql store compatible) way for selective 
+  updates:
+
+  article.title = 'Changed'
+  article.hits += 1
+  article.update(:title, :hits)
+
+* New, in-memory store that support all features. This is a pure
+  ruby solution useful for experimentation. It will also serve
+  as the base for the forthcoming madeleine Store implementation.
+
+* Allow for multiple stores in one application. A great example,
+  mysql_to_psql is provided. This example uses Og's powerfull
+  features to automatically convert a Mysql database to a 
+  PostgreSQL database. Database migration was never easier.
+  
+* Uses the excellent Facets utility collection to further
+  clenup and minimize the code.
+
+* Managed classes or Entities should include the EntityMixin
+  or extend the Entity class. Example:
+  
+  class Article < Entity
+    ..
+  end
+  
+  class Article 
+    include EntityMixin
+  end
+  
+  This is done to avoid the Module module like in earlier
+  versions of Og. However, Og is can infer the need to include
+  the Managed mixin in typical cases:
+  
+  class Article
+    property :title, String 
+    # when a property is defined Og automatically converts the
+    # class to an Entity
+  end
+  
+  class Article < AnExistingManagedEntity
+    # also includes the mixin
+    ...
+    
+  class Article
+    include AModuleThatDefinesProperties
+    ...
+
+* Improved support for og_delete interception.
+
+* Support for nested transactions.
+  
+* Many, many smaller features and changes.
+  
+Check out the file test/og/tc_store.rb for a demonstration of
+the new features. The stores for Oracle and SqlServer are not
+converted yet.
+
+
+== Version 0.16.0 was released on 15/04/2005.
+
+A snapshot of the latest developments. Many, many subtle improvements,
+new features and a major cleanup of the source code. 
+
+Most notable additions:
+
+* Aspect Oriented Programming support. This new system
+  is used to reimplement features such as Controller filters,
+  Og callbacks and Og observers. By using this unified
+  system you can now add Observers to controllers and use
+  a metalanguage for wraping Og object callbacks:
+
+  class Controller
+     pre :force_login, :where => :prepend
+     wrap Benchmark, :on => :index
+     post :taraa, :on => login
+  end
+ 
+  module Timestamped
+     pre :on => :og_insert { |this| this.create_time = Time.now }
+    pre :on => :og_update { |this| this.update_time = Time.now }
+    pre :on => [:og_insert, :og_update] { |this| this.create_time = Time.now }
+  end
+
+  This feature will be used extensivelly  in future versions
+  to improve logging, the shaders and more.
+
+* Major cleanup of the source. Converted the N namespace to
+  Nitro. 
+
+* Add Og Timestamped mixin.
+
+* Og improvements.
+
+* Improved the Gem installation process.
+
+* Fixed all reported bugs.
+
+
+== Version 0.15.0 was released on 04/04/2005.
+
+A great release. Many cool new features and tons of subtle 
+improvements. We also welcome a new core developer, Anastastios 
+Koutoumanos, who started contributing with a new SqlServer adapter.
+
+Most notable additions:
+
+* NestedSets mixin:
+
+  class Comment
+    include NestedSets
+  end
+
+  or
+
+  class Comment
+    include Hierarchical, :method => :nested_sets
+  end
+
+  c.add_comment(child_comment)
+  c.full_children
+  c.direct_children
+  c.children
+ 
+  this is a reimplementation of the SqlTraversable mixin
+  available in older versions.
+ 
+* New implementation of Orderable mixin:
+
+  class Comment
+    property :body, String
+    belongs_to :article, Article
+    include Orderable, :scope => article
+  end
+
+  c.move_higher
+
+  The Orderable mixin uses the :scope parameter to dynamically alter
+  the methods appended to the Comment class. 
+ 
+* New SqlServer adapter.
+
+== Version 0.14.0 was released on 18/03/2005.
+
+Many many important fixes, and many small additions
+and improvements. Og mixins are introduced with
+an experimental List mixin implementation.
+
+Most notable additions:
+
+* Support for objects that participate in list
+ (ordering/removal etc)
+
+* Add useful new enchant methods.
+
+* Fixed all user reported bugs.
+
+
+== Version 0.13.0 was released on 17/03/2005.
+
+A maintenance release. 
+
+Most notable additions:
+
+* Better separated from Nitro.
+
+* Database related validations (validate_unique) etc.
+
+* Emmit warnings on implicit graph changes.
+
+* Many bugfixes.
+
+
+== Version 0.12.0 was released on 07/03/2005.
+
+A careful blend of new features and subtle improvements
+to the existing infrastructure. Some important bugs where
+fixed aswell.
+
+Most notable additions:
+
+* Og automatically generates finders for all properties, for
+  even easier (and portable) querying:
+
+  class Article
+    property :title, :body, String
+    property :hits, Fixnum
+    property :create_time, Time
+  end
+
+  you get the finders:
+
+  Article.find_by_title
+  Article.find_by_body
+  Article.find_by_hits
+  Article.find_by_create_time
+
+  The finders take into account the unique constrain, to return
+  an array or just an object as needed.
+
+* Og introduces lifecycle observers to avoid 'poluting' the model
+  objects with excess functionality. You can use every object
+  as observer (duck typing) or extend from an AR style Observer
+  class. The observer callbacks are precompiled in the lifecycle
+  methods only if defined, so the perfomance is not affected
+  in the general case.
+
+* Fixed Og bug: multiple many_to_many relations with the
+  same target class.
+
+* further code cleanup, improved examples and more.
+
+
+== Version 0.11.0 was released on 28/02/2005.
+
+The platform continues to evolve and now supports the 
+the Oracle database out of the box. This version features 
+improved documentation, important bug fixes  and many subtle 
+improvements to make programming even more enjoyable. Many 
+thanks to Matt Bowen for his help with this release.
+
+Most notable additions:
+  
+* Documentation (doc/og_tutorial.txt, doc/og_config.txt)
+
+* Og Oracle adapter.
+
+* Og provides advanced metadata for the managed objects
+
+  class Article
+    property :title, String
+    property :body, String
+    has_many :comments, Comment
+  end
+
+  par = Article.properties_and_relations
+  => [Property(:title), Property(:body), Og::HasMany(:comments)]
+
+  par[2].klass
+  => Comment
+
+  par[2].meta[:linkback]
+  => :article_oid
+
+* Og Typemacros, here is an example:
+
+  def VarChar(size)
+    return String, :sql => "NOT NULL VARCHAR(#{size})"
+  end
+
+  property :title, VarChar(30)
+
+* Option for faster startup, skip schema check.
+
+* Many small Og improvements and fixes.
+
+WARNING: If you used an earlier version of Og you
+may need to drop your database and let Og recreated it
+automatically.
+
+
+== Version 0.10.0 was released on 15/02/2005.
+
+An important release.
+
+Most notable additions:
+
+* Improved Og implementation (cleaner code) and new Og 
+  adapter subsystem.
+
+* New SQLite3 Og adapter, improvements in MySQL and PostgreSQL 
+  adapters (needs version 1.1.0 of Sqlite3-Ruby).
+
+* Better GemSpec for easier installation by RubyGems.
+
+* Og supports optional typechecking by using property metadata.
+
+* and many more smaller fixes.
+
+WARNING: If you used an earlier version of Og you
+may need to drop your database and let Og recreated it
+automatically.
+
+
+== Version 0.9.3 was released on 01/02/2005.
+
+A maintenance release.
+
+Most notable additions:
+
+* Og metalanguage relations insert metadata into 
+  the target class, useful for advanced scaffolders.
+
+* Og refer_to meta-language command. 
+
+* Correct handling of booleans.
+
+* Auto-include metalanguage on prop.
+
+* Many bug fixes.
+
+
+== Version 0.8 was released on 12/01/2005.
+
+A snapshot of the latest code. Cool new features,
+many fixes and improvements in older features. Many thanks
+to Michael Neumann for giving intelligent suggestions
+and finding small bugs.
+
+Most notable additions:
+
+* New automatic validation system:
+
+  class User
+    prop_accessor :name, :password, String
+    validate_confirmation :password
+    validate_length :name, :range => 2..12
+  end
+
+  u = User.new(...)
+  unless u.valid?
+    p u.errors.on(:name)
+    p u.errors[:password]
+  end
+
+* No global variables in Og. 
+
+* Recoded Og to allow for future support of multiple databases 
+  (even on different RDBMS systems) on a single application.
+
+* cleaned up backend code.
+
+* More unit tests.
+
+* Supports Ruby 1.8.2
+  
+
+== Version 0.7 was released on 27/12/2004.
+
+A snapshot of the latest code. Many fixes and new features result
+in a more mature product. Many thanks to the ruby hackers that sent
+suggestions and patches used in this release!
+
+Most notable additions:
+
+* Totaly recoded prop_accessor mechanism, avoids polution of the Module
+  class.
+* prop_accessors for Modules, allows synthesizing of managed objects
+  from Mixins.
+* new automatically generated methods in Og.
+* MockDatabase leverages the FlexMock object for easier unit testing.
+
+
+== Version 0.6 was released on 13/12/2004.
+
+This is a preview release, the api for the new features is not 
+finalized. This early release gives other developers to offer suggestions
+on the final form of those features.
+
+Most notable additions:
+
+* Og many_to_many relations with auto generation of the join table.
+* Og has_one relation.
+
+
+== Version 0.5.0 was released on 21/11/2004.
+
+New standalone version. SQL indices can be defined again.
+
+
+== Version 0.5.0 was released on 01/11/2004.
+
+Renamed to Og (ObjectGraph) Og combines the best features of Active
+Record and NDB. A fully working MySQL adapter is also provided.
+Moreover the code base is further cleaned up. Small improvements 
+to the application configuration system. This version is integrated
+in Nitro.
+
+
+== Version 0.2 was released on 07-10-2004. 
+
+The sofware is actually usable but not tested in a production environment. 
+Comments from the Ruby community are critical in order to fix possible 
+bugs and improve the API. Suggestions for missing features are also 
+welcome. This version only supports the Postgres Database.
+

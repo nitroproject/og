@@ -1,0 +1,174 @@
+= Og -- README
+
+Og (ObjectGraph) is a powerful and elegant object-relational mapping 
+library. Og manages the lifecycle of Ruby objects and  provides 
+transparent serialization of object graphs to stores (typically
+RDBM systems)/.
+
+Unlike other similar solutions Og maps standard Ruby objects 
+to SQL tables and not vice versa. Og provides a domain specific 
+language to describe the relations between objects, a flexible 
+and intuitive api for querieng the database, raw access to the 
+SQL language if needed (for example to fine tune the automatically 
+generated SQL tables, or for custom queries), provides automatic 
+validation, suports deserialization to Ruby objects or tuples, 
+automatically generates join tables for many_to_many relations 
+and provides a collection of usefull Mixins to synthesize 
+common Entities.
+
+Adapters for PostgreSQL, MySQL, SQLite3 are included.
+
+Og is part of the Nitro project, released as a stand-alone library
+due to popular demand. You can find the ChangeLog in the Nitro 
+distribution (http://www.nitroproject.org).
+
+
+== Features
+
+The library provides the following features:
+
+* Object-Relational mapping, automatically maps standard 
+  Ruby objects to sql schemas.
+* Absolutely no configuration files.
+* Multiple stores (PostgreSQL, MySQL, SQLite).
+* Can 'reverse engineer' legacy database schemase.
+* Fine-grained or High-level customization of the generated
+  schema.
+* ActiveRecord-style domain specific language and db synchronized
+  collections.
+* Scoped queries on collections.
+* Transforms resultsets from arbitrary sql queries to Ruby objects.
+* Independent store for each object class, can support multiple
+  stores in the same application.
+* Deserialize to Ruby Objects.
+* Deserialize sql join queries to Ruby Objects.
+* Can optionally use Ruby as a query language.
+* Supports model caching (even on distribbuted environments)
+* Eager associations.
+* Serialize arbitrary ruby object graphs through YAML.
+* Connection pooling.
+* Thread safety.
+* SQL transactions.
+* Aspect oriented constructs allow interception of lifecycle callbacks.
+* Transparent support for cascading deletes for all backends.
+* Can annotate and manage existing Ruby classes.
+* Hierarchical structures (nested sets)
+* Works safely as part of distributed application.
+* Optimistic locking.
+* Dynamic finder methods.
+* Simple implementation.
+
+
+== What's new
+
+For information about the latest changes please consult the
+file
+
+doc/RELEASES
+
+
+== Download
+
+The latest version of Og can be found at
+
+* http://www.nitroproject.org
+
+== Documentation
+
+Documentation for Og can be found at
+
+* http://www.nitroproject.org
+
+Don't forget to read the file doc/RELEASES for usefull
+documentation bits. Also, have a look at the test cases in
+the test directory for examples of usage. Additional examples
+of Og usage can be found at the example distribution of the
+Nitro Web Framework (http://www.nitroproject.org)
+
+You can find a nice tutorial at www.rubygarden.com. Be warned
+that this tutorial describes an earlier version of Og. A *LOT*
+of new features have been added in the meantime.
+
+
+== Requirements
+
+Og requires the following applications or libraries:
+
+* Ruby 1.8.1 and greater
+  http://www.ruby-lang.org
+  Version 1.8.2 is recomended.
+
+* Ruby-psql 
+  http://www.postgresql.jp/interfaces/ruby/archive/ruby-postgres-0.7.1.tar.gz
+  Ruby interface to the PostgreSQL RDBMS.
+
+* Ruby-mysql
+  http://tmtm.org/ja/ruby/mysql/README_en.html
+  Ruby interface to the MySQL RDBMS.
+  Pure Ruby Mysql interface:
+  http://www.tmtm.org/ruby/mysql/
+
+* PostgreSQL
+  http://www.postgres.org
+  Used for the Database Backend.
+
+* MySQL
+  http://www.mysql.org
+  Used for the Database Backend.
+
+* SQLite
+  http://www.sqlite.org/download.html
+  WARNING: you need sqlite3-ruby > 1.1.0
+
+Please install the required applications and libraries before continuing
+with the installation of Og. Only install the libraries needed for
+the backend you plan to use.
+
+
+== Installation
+
+Og is distributed as a RubyGem. First of all make sure you have
+installed RubyGems on your system. Then run the following command:
+
+gem install og
+
+(make sure you have the latest stable versions of Ruby and RubyGems
+installed)
+
+Then try to run the examples in the examples directory.
+
+A tar.gz distribution is also available on http://www.rubyforge.com/projects/nitro.
+
+
+== Examples:
+
+Some examples can be found in the examples directory. You are also
+encouraged to check out the unit tests. Especially the test:
+
+test/og/tc_store.rb
+
+demonstrates some advanced features of Og.
+
+
+== Support
+
+For any questions regarding Og, feel free to ask on the ruby-talk 
+mailing list (which is mirrored to comp.lang.ruby) or contact 
+mailto:george.moschovitis@gmail.com.
+
+An Og specific mailing list is also available. Please subscribe
+to nitro-general@rubyforge.com. The homepage for this list
+is available here:
+
+http://rubyforge.org/mailman/listinfo/nitro-general
+
+
+== Licence
+
+Copyright (c) 2004-2007, George 'gmosx' Moschovitis (http://www.gmosx.com).
+
+Og (http://www.nitroproject.org) is copyrighted free software 
+created and maintained by George Moschovitis 
+(mailto:george.moscovitis@gmail.com) and released under the 
+standard BSD Licence. For details consult the file LICENCE.
+

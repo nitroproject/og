@@ -1,0 +1,602 @@
+= Og Tutorial
+
+=== WARNING
+
+This tutorial is not updated for the latest code. However it is
+a nice read to understand the spirit and feature of Og. Please
+consult the API for the latest more advanced features of Og.
+
+
+=== Introduction
+
+Ruby is a wonderful object oriented language featuring a well
+designed syntax and advanced constructs to bring the joy back
+to programming. Creating the object model to describe your
+problem domain is easy, but making this model persistent is
+another story: you have to deal with relational databases
+and the SQL language.
+
+RDBMS systems are a proven and robust technology for storing
+and querying data, but after experiencing the wonders of Ruby,
+it is hard not to wish for a better way to integrate the OOP
+and Relational paradigms.
+
+Og makes your dream come true! Og stands for ObjectGraph and
+provides a transparent way to make your objects persistent
+while leveraging the full querying power of an RDBMS system.
+In fact, Og is designed to use an RDBMS system like MySQL or
+PostgreSQL to implement the actual data store where the
+objects are serialized.
+
+But, enough with the techno-babble, let's walk through a simple
+example to give you a better idea of what Og can do.
+
+
+=== Installing Og
+
+The best way to install Og is through RubyGems. For example:
+
+gem install og
+
+In order to use Og with a specific RDBMS, you have to install
+the corresponding Ruby binding. A list of supported RDBMS's
+and information about the Ruby bindings can be found in the
+README file.
+
+Alternatively, you can install a .tar.gz or .zip distribution.
+You can find these at the following URL:
+
+http://www.rubyforge.com/projects/nitro
+
+
+=== A Basic Blog Model
+
+Blogs are in vogue. It seems that almost everyone is running a blog, and
+many try to code one from scratch. We'll review the steps necessary
+to generate the persistence model for a blog application using Og.
+
+Let's start by designing the objects we'll use. Our simple Blog
+will use these three objects:
+
+# Blog category
+
+class Category
+    attr_accessor :name
+end
+
+# Blog posting
+
+class Post
+    attr_accessor :title
+    attr_accessor :body
+    attr_accessor :author
+end
+
+# Blog comment
+
+class Comment
+    attr_accessor :title
+    attr_accessor :body
+    attr_accessor :author
+end
+
+As you can see, this is pure Ruby code. One of the features of
+Ruby is dynamic typing. When defining the attributes of our
+objects, we don't declare the actual type. However, in order to
+persist the model in SQL, we need to provide some hints to Og.
+
+Og provides a replacement to the attr* family of methods to
+facilitate attaching metadata to the object's attributes. An
+attribute that contains metadata is called a property. For
+each attr* method, there is a corresponding prop* method. That is,
+
+    attr          => prop
+    attr_accessor => attr_accessor
+    attr_reader   => prop_reader
+    attr_writer   => prop_writer
+
+Here are the class definitions using the property mechanism:
+
+require 'og'
+
+class Category
+    attr_accessor :name, String
+end
+
+class Post
+    attr_accessor :title, String
+    attr_accessor :body, String
+    attr_accessor :author, String
+    attr_accessor :create_time, Time
+    attr_accessor :hits, Fixnum
+end
+
+class Comment
+    attr_accessor :title, String
+    attr_accessor :body, String
+    attr_accessor :author, String
+    attr_accessor :create_time, Time
+end
+
+Notice that the attr_accessor works similar to Ruby's attr_accessor. 
+Here are some examples:
+
+prop :title, true, String
+prop_reader :title, :body, :author, String
+
+To make the definitions look even cleaner, Og provides the property alias:
+
+class Category
+    property :name, String
+end
+
+class Post
+    property :title, String
+    property :body, String
+    property :author, String
+    property :create_time, Time
+    property :hits, Fixnum
+end
+
+class Comment
+    property :title, String
+    property :body, String
+    property :author, String
+    property :create_time, Time
+end
+
+This is most of the information that Og needs to manage these objects. Before we continue,
+we need to setup the actual RDBMS data store used by Og. Currently, Og has built-in adapters
+for PostgreSQL, MySQL, SQLite3, and Oracle. For this example, we'll use the PostgreSQL adapter,
+so add this code after the class definitions.
+
+db = Og::Database.new(
+    :database => 'test',
+    :adapter  => 'psql',
+    :user     => 'postgres',
+    :password => 'gmrulez'
+)
+
+Now you are ready to save your first object into Postgres. Add the following code:
+
+# create the object
+p = Post.new
+p.title = 'Hello'
+p.body = 'World'
+p.author = 'tml'
+
+# save the object in the database
+p.save
+
+That's it! Og works behind the scenes doing all the work for you.
+This simple command, p.save, does the following:
+
+1. Creates the database 'test' if it doesn't exist.
+2. Creates a table to store Post objects if it doesn't exist.
+   The table's columns map to the object properties.
+3. Creates SQL indices.
+4. Creates any needed sequences.
+5. Serializes the object into the table.
+
+Issue the following SQL to see the result:
+
+SELECT * FROM og_post
+
+This is nice, but where does the #save method come from?
+Og uses Ruby's advanced introspection features to automatically
+'enchant' class that define properties. An enchanted class
+provides several methods that will be discussed in the following
+text. These enchanted classes are called *managed* classes.
+
+Before going on, let's look at another Og macro that eases object creation:
+
+p = Post.create
+
+Create automatically calls the save method. Here is another way to save the object:
+
+db << p
+
+OR
+
+db.save(p)
+
+
+Let's create a Category object.
+
+cat = Category.new
+cat.name = 'Programming'
+cat.save
+
+If you investigate the generated og_category table, you will
+see an 'oid' column which serves as the primary key. This
+column is added automatically by Og. You can use the oid
+values to lookup objects:
+
+cat = Category[1] # loads the category object with oid = 1
+
+OR
+
+cat = db.load(1, Category)
+
+As a convenience, Og allows you to lookup the category
+using the special property 'name':
+
+cat = Category['Programming']
+
+You can lookup objects by name only if the name property is
+defined.
+
+If you want to view Og's SQL, you can enable debug mode by setting this global 
+debug (DBG) variable:
+
+$DBG = true
+
+
+=== Customizing the Schema and Defining Relations
+
+Og makes our blog model persistent through a simple interface. The next step is to
+refine the schema and define relations between the objects:
+
+class Post; end
+class Comment; end
+
+class Category
+    property :name, String
+
+    many_to_many :posts, Post
+
+    def initialize(title = nil)
+        @title = title
+    end
+end
+
+class Post
+    property :title, String, :sql => 'VARCHAR2(32) NOT NULL'
+    property :body, String
+    property :author, String
+    property :create_time, Time
+    property :hits, Fixnum, :sql_index => true
+
+    has_many :comments, Comment
+
+    def initialize(title = nil, body = nil, author = nil)
+        @title, @body, @author = title, body, author
+        @create_time = Time.now
+        @hits = 0
+    end
+end
+
+class Comment
+    property :title, String, :sql => 'VARCHAR2(32) NOT NULL'
+    property :body, String
+    property :author, String
+    property :create_time, Time
+
+    belongs_to :post, Post
+
+    def initialize(title = nil, body = nil, author = nil)
+        @title, @body, @author = title, body, author
+        @create_time = Time.now
+    end
+end
+
+Observe the :sql property option is used to refine
+the generated column type for the title property of Post,
+and how the :sql_index option is used to add an index to
+the generated table.
+
+Notice that the initialize methods provide default
+values to all parameters. This is required for all managed objects.
+
+Observe the many_to_many, has_many, and belongs_to macros.
+Og uses these macros to define the relations between
+standard Objects. In essence, Og defines a domain specific
+mini language. The following kinds of relations are
+supported:
+
+    * has_one: has one object of the given type.
+
+    * has_many: has many objects of the given type.
+
+    * belongs_to: belongs_to an object of the given type.
+
+    * many_to_many: defines a many-to-many relation. The corresponding
+      rows in the database are linked through a join table.
+
+    * refers_to: refers to another object.
+
+These macros generate the constructs needed to efficiently implement
+the corresponding relations. For example, the belongs_to macro generates
+the property that links to the parent. The many_to_many relation generates
+the join table that links the participating classes.
+
+Note that we have to use forward definitions of Post and Comment to satisfy
+Ruby's parser. Workarounds will be provided in a future version.
+
+After defining these relations, using and querying the object model is easy:
+
+cat = Category.create('Programming')
+
+cat.add_post { |p|
+     p.title = 'Title'
+     p.body = 'Body
+}
+
+cat.add_post { |p|
+    p.title = 'Another'
+    p.body = 'Hello'
+}
+
+cat.posts
+ => [Post(Title), Post(Another)]
+
+cat.posts[0].title
+ => Title
+
+cat.posts.size
+ => 2
+
+p = Post[1]
+p.title
+ => Title
+
+p.categories[0].title
+ => 'Programming'
+
+c = Comment.new('hello', 'world', 'tml')
+c.post = p
+c.save
+
+p.comments.size
+ => 1
+
+p.add_comment { |c|
+    c.title = 'Hi there'
+}
+
+p.comments[1].title
+  => 'Hi there'
+
+com = Comment.new('Hi there')
+p.add_comment(com)
+
+All the methods used in the above examples are generated automatically.
+These methods transparently modify the underlying SQL schema using efficient queries.
+
+Og provides full access to all features of the underlying RDBMS. Look at the following:
+
+post = Post.select("title='Title' and body='Body'")
+post.size
+ => 1
+post.hits
+ => 0
+
+Updating existing objects is easy too:
+
+p = Post[1]
+p.title = 'Changed'
+p.save
+
+p = Post[1]
+p.title
+ => 'Changed'
+
+You can also update specific properties, for example:
+
+p = Post[1]
+p.update_properties "body='Hello world'"
+
+p = Post[1]
+p.body
+ => 'Hello world'
+
+If you don't like a particular comment, you can easily delete it by doing the following:
+
+Comment.delete(comment)
+
+OR
+
+comment.delete!
+
+OR
+
+db.delete(comment)
+
+To delete all comments for a posting, enter the following:
+
+p.delete_all_comments
+
+When deleting an object that participates in relations, Og tries
+to delete all objects that belong to this object (ie, cascade deletes).
+
+All the generated methods take more parameters to customize their
+behaviour to suit your needs.
+
+
+=== Defining Callbacks
+
+Og provides a detailed callback facility allowing you to hook
+into a managed object's Lifecycle. This is a very useful
+feature that can improve your code considerably. To implement
+a callback, you have to define one or more of the following methods
+in your class:
+
+    * og_pre_insert
+    * og_post_insert
+    * og_pre_update
+    * og_post_update
+    * og_pre_insert_update
+    * og_post_insert_update
+    * self.og_pre_delete
+
+For example, the following code defines a callback for the Post class.
+
+class Post
+  ...
+
+  def og_post_insert(conn)
+        puts 'Hey, a new post was just posted!'
+    end
+end
+
+When post.save is called, you'll get this alert:
+
+p = Post.create('Hello')
+ => console: Hey, a new post was just posted!
+
+
+=== Using OOP techniques
+
+Og's managed objects are standard Ruby objects, so we can use class inheritance
+and module inclusion to minimize the code we have to write. Here's how we can
+improve the blog schema:
+
+class Category
+    property :name, String
+    many_to_many :posts, Post
+
+    def initialize(title = nil)
+        @title = title
+    end
+end
+
+class Common
+    property :title, String, :sql => 'VARCHAR2(32) NOT NULL'
+    property :body, String
+    property :author, String
+    property :create_time, Time
+
+    def initialize(title = nil, body = nil, author = nil)
+        @title, @body, @author = title, body, author
+        @create_time = Time.now
+    end
+end
+
+class Post < Common
+    property :hits, Fixnum, :sql_index => true
+    has_many :comments, Comment
+
+    def initialize(title = nil, body = nil, author = nil)
+        super
+        @hits = 0
+    end
+end
+
+class Comment < Common
+    belongs_to :post, Post
+end
+
+In essence, this feature allows you to create SQL tables using inheritance,
+saving you lots of time when using objects with similar properties. It's also
+less error prone.
+
+
+=== Defining Validation Rules
+
+When managing large amounts of data, enforcing data integrity is
+important. Og provides another domain specific mini language that allows
+you to define validation rules in a simple manner. In the following code,
+the blog schema is enriched with hints that allows Og to automatically generate
+validation code:
+
+class Common
+    property :title, String, :sql => 'NOT NULL VARCHAR(32)'
+    property :body, String
+    property :author, String
+    property :create_time, String
+
+    validate_value :title
+    validate_length :body, :range => 2..100, :msg_long => 'argh'
+    validate_format :author, :format => /[a-z]/, :msg => 'wrong format'
+
+    def initialize(title = nil, body = nil, author = nil)
+        @title, @body, @author = title, body, author
+        @create_time = Time.now
+    end
+end
+
+This code demonstrates some validations facilities. Using the validate_value
+macro, we enforce that the 'title' property will have a value. Using the
+validate_length macro, we enforce the minimum and maximum lengths for the
+'body' property. Using the validate_format macro, we enforce a required
+format for values assigned to the 'author' field.
+
+Let's see this validation in practice:
+
+c = Comment.new
+c.valid?
+ => false
+c.errors.count
+ => 3
+
+c.title = 'Hello'
+c.valid?
+c.errors.count
+ => 2
+
+The errors array contains a list of Error objects that point to the offending
+field and contain a descriptive message.
+
+With Og, you can customize almost everything! More information can be found in the source code
+(lib/glue/validation.rb). To whet your appetite, here is a list of predefined validation macros:
+
+    * validate_value
+    * validate_format
+    * validate_length
+    * validate_inclusion
+    * validate_confirmation
+
+
+=== TypeMacros
+
+If you look at the common class definition, you will notice that the :sql
+option looks kind of ugly:
+
+:sql => 'VARCHAR2(32) NOT NULL'
+
+When building larger object models, this issue comes up frequently. Og
+provides a elegant solution in the form of type macros:
+
+def VarChar(size)
+    return String, :sql => "VARCHAR2(#{size}) NOT NULL"
+end
+
+property :title, VarChar(30)
+
+
+=== Switching To Another Database
+
+While Postgres is a great database, let's assume that the client wants to switch to
+MySQL at the last minute. Don't worry, Og can easily accomodate this by simply changing
+the db reference in the configuration file to look like this and then re-running the example:
+
+db = Og::Database.new(
+    :database => 'test',
+    :adapter  => 'mysql',
+    :user     => 'postgres',
+    :password => 'gmrulez'
+)
+
+A new MySQL database is automatically created along with all tables, indices, etc. You get all 
+this with changing only one line of code!
+
+
+=== Is There More?
+
+You betcha! You can to find more about Og by reading the available RDoc documentation and browsing the examples.
+
+For any questions regarding Og, feel free to ask on the ruby-talk 
+mailing list (which is mirrored to comp.lang.ruby) or contact 
+mailto:george.moschovitis@gmail.com.
+
+A Nitro specific mailing list is also available. You can post questions about
+Og to this list. Please subscribe to nitro-general@rubyforge.com. The homepage 
+for this list is available here:
+
+http://rubyforge.org/mailman/listinfo/nitro-general
+
+Note that Og is still under heavy development, so new features are being added frequently. 
+Be sure to check back for updates.
+
+
+
