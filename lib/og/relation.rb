@@ -16,6 +16,7 @@ module Og
 #++
 
 class Relation
+  is Anise
 
   # The parameters of this relation.
 
@@ -28,11 +29,7 @@ class Relation
     @options = options
     @options.update(args.pop) if args.last.is_a?(Hash)
 
-    target_name = if collection
-      :target_plural_name
-    else
-      :target_singular_name
-    end
+    target_name = collection ? :target_plural_name : :target_singular_name
 
     # Check that all needed options are provided.
 
@@ -40,8 +37,7 @@ class Relation
       raise "Class of target not defined"
     end
 
-    # Try to set the target class. Checks for class and
-    # class symbol.
+    # Try to set the target class. Checks for class and class symbol.
 
     if args.last.to_s.capitalized?
       @options[:target_class] = args.pop
@@ -57,8 +53,7 @@ class Relation
 
     options[:name] = options[target_name]
 
-    # Is the relation polymorphic? If so mark the class as
-    # polymorphic.
+    # Is the relation polymorphic? If so mark the class as polymorphic.
 
     if polymorphic_marker?
       owner_class = options[:owner_class]
@@ -152,6 +147,7 @@ class Relation
     owner_class = owner_class.to_s
 
     begin
+      sym = sym.to_s.capitalize
       c = "#{owner_class}::#{sym}"
       const = constant(c)
       owner_class =~ /^(.*)::(?:[^:])*$/

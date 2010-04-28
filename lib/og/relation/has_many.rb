@@ -41,6 +41,9 @@ class HasMany < Relation
     
     owner_class.module_eval <<-EOS, __FILE__, __LINE__
       def #{target_plural_name}(options = nil)
+ #unless @#{target_plural_name}.is_a?(HasManyCollection)
+ #  raise "Not a HasManyCollection #{target_plural_name}"
+ #end
         unless @#{target_plural_name}
           @#{target_plural_name} = HasManyCollection.new(
             self, 
@@ -52,7 +55,7 @@ class HasMany < Relation
             options
           )
         end
-        
+
         @#{target_plural_name}.find_options = options
         @#{target_plural_name}.reload(options) if options and options[:reload]
         @#{target_plural_name}
@@ -60,21 +63,18 @@ class HasMany < Relation
       
       def #{target_plural_name}=(*args)
         options = args.last.is_a?(Hash) ? args.pop : nil
-        
+
         if args.size == 1 && args.first.is_a?(HasManyCollection)
           @#{target_plural_name} = args.first
           @#{target_plural_name}.find_options = options if options
-          
           return @#{target_plural_name}
+        else
+          args.flatten!
+          args.each do |obj|
+            add_#{target_singular_name}(obj, options)
+          end        
+          return #{target_plural_name}
         end
-        
-        args.flatten!
-        
-        args.each do |obj|
-          add_#{target_singular_name}(obj, options)
-        end
-        
-        return #{target_plural_name}
       end
 
       def add_#{target_singular_name}(obj, options = nil)

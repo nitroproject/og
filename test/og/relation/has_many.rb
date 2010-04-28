@@ -3,12 +3,16 @@ require File.join(File.dirname(__FILE__), "..", "..", "helper.rb")
 $DBG = true
 
 class Item
+  is Og::Model
+
   attr_accessor :name, String
 
   has_many Tag
 end
 
 class Tag
+  is Og::Model
+
   attr_accessor :name, String
 
   belongs_to Item
@@ -31,7 +35,7 @@ describe "A Og Has-Many Relationship" do
   it "should concatenate more relations" do
     tag = Tag.create_with(:name => "Nitro")
     i = Item.create_with(:name => @name)
-    
+
     i.tags << tag
     
     i.tags.size.should == 1
@@ -41,9 +45,9 @@ describe "A Og Has-Many Relationship" do
   it "should generate magic adders" do
     tag = Tag.create_with(:name => "Facets")
     i = Item.create_with(:name => @name)
-    
+
     i.add_tag tag
-    
+
     i.tags.size.should == 1
     i.tags.first.should == tag
   end
@@ -54,7 +58,7 @@ describe "A Og Has-Many Relationship" do
     tag.saved?.should_not be_nil
     
     i = Item.create_with(:name => @name, :tags => tag)
-    
+
     i.saved?.should_not be_nil
     i.tags.first.should == tag
   end
@@ -62,7 +66,7 @@ describe "A Og Has-Many Relationship" do
   it "should assign_with_tags" do
     tags = [Tag.create_with(:name => "Glue"), Tag.create_with(:name => "Og")]
     i = Item.create_with(:name => @name, :tags => tags)
-    
+
     i.tags.to_ary.should == tags
   end
   
@@ -76,7 +80,7 @@ describe "A Og Has-Many Relationship" do
       :count_tags
     )
     i = Item.create_with(:name => @name, :tags => coll)
-    
+
     i.instance_variable_get("@tags").should == coll
   end
 

@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), "..", "..", "helper.rb")
 require "og/util/ann_attr"
 
 class MockClass
+  is Anise
   attr_accessor :name, String
   attr_accessor :hits, Fixnum
   attr_accessor :create_time, Time

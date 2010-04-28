@@ -793,9 +793,9 @@ class SqlStore < Store
   def serializable_attributes_for_class(klass)
     attrs = klass.serializable_attributes
     klass.table_class.each_schema_child do |desc|
-        attrs.concat desc.serializable_attributes
+      attrs.concat(desc.serializable_attributes)
     end
-    return attrs.uniq
+    return attrs.map{|x|x.to_sym}.uniq
   end
 
   # Return the SQL table field for the given serializable

@@ -1,5 +1,5 @@
 require "facets/class/descendents"
-require "facets/interface"
+require "og/glue/interface"
 require "facets/inheritor"
 
 # Support for simple Aspect Oriented Programming (AOP).

@@ -9,11 +9,11 @@ require File.join(File.dirname(__FILE__), "helper", "fixture0.rb")
 describe "the sql store" do
 
   def fixtures
-    gmosx = User.create_with :name => "gmosx", :age => 32, :email => "george.moschovitis@gmail.com"
-    renos = User.create_with :name => "renos", :age => 31
+    gmosx  = User.create_with :name => "gmosx", :age => 32, :email => "george.moschovitis@gmail.com"
+    renos  = User.create_with :name => "renos", :age => 31
     stella = User.create_with :name => "stella"
     
-    a = Article.new.assign_with :title => "Hello", :body => "World"
+    a = Article.new.populate(:title => "Hello", :body => "World")
     a.user = renos
     a.save 
   end

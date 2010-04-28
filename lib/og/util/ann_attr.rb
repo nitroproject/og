@@ -1,12 +1,16 @@
-# Customize Facets ann_attr implementation to be more suitable
+# Customize ann_attr implementation to be more suitable
 # for Og.
 #--
 # FIXME, THINK: why are these defined in Module.
 #++
 
-require "facets/annotations"
-require "facets/attributes"
+require "anise" #facets/annotations"
+#require "facets/attributes"
 require "og/validation"
+
+#module Anise::Attribute
+#  alias_method :property, :attr_accessor
+#end
 
 class Module
 
@@ -28,8 +32,9 @@ class Module
   end
 
   # For backwards compatibility, this is DEPRECATED.
-
-  alias_method :property, :attr_accessor
+  def property(*a,&b)
+    attr_accessor(*a, &b)
+  end
 
   # Return the serializable attributes of this class.
   # Serializable are attributes with the class annotation that
@@ -48,6 +53,7 @@ class Module
   #   MyClass.serializable_attributes # => [:name, :age]
 
   def serializable_attributes
+    return [] unless respond_to?(:instance_attributes)
     instance_attributes.find_all do |a|
       anno = self.ann(a)
       anno[:class] and (anno[:serialize] != false)
@@ -106,3 +112,4 @@ class Module
   end
 
 end
+

@@ -9,21 +9,30 @@
 
 require "English"
 require "pp"
-p "here"
+
+require 'language/mixin'
+require 'english/inflect'
+
+Language.current = 'en'
+
 require "facets"
 require "facets/synchash"
 require "facets/syncarray"
 require "facets/logger"
-require "facets/stylize"
+require "facets/nullclass"
+#require "facets/stylize"
+require "facets/attr"
 
 require "og/global_logger"
 
 require "og/aspects"
 require "facets/settings"
 
-require "facets/nullclass"
-require "facets/annotations"
-require "facets/paramix" # keep this before module/is
+require 'og/glue'
+
+require "anise"
+
+require "paramix" # keep this before module/is
 
 require "facets/module/is"
 require "facets/class/cattr"

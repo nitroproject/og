@@ -9,6 +9,8 @@ module Og::Mixin
 #++
 
 module Timestamped
+  include Anise
+
   attr_accessor :create_time, Time, :control => :none
   attr_accessor :update_time, Time, :control => :none
   attr_accessor :access_time, Time, :control => :none
@@ -42,6 +44,8 @@ end
 # module.
 
 module TimestampedOnCreate
+  include Anise
+
   attr_accessor :create_time, Time, :control => :none
 
   before :og_insert do 

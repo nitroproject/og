@@ -85,9 +85,9 @@ module OgSpecHelper
 
 end
 
-module Spec::DSL::BehaviourEval::ModuleMethods
-  alias :should :it
-end
+#module Spec::DSL::BehaviourEval::ModuleMethods
+#  alias :should :it
+#end
 
 Logger.get.level = Logger::FATAL unless $DBG
 

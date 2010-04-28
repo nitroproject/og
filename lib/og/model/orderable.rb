@@ -1,4 +1,4 @@
-require "facets/paramix"
+require "paramix"
 
 module Og::Mixin
 
@@ -10,12 +10,14 @@ module Og::Mixin
 # of the object before inserting to have correct ordering.
 
 module Orderable
+  is Og::Model #is Anise
+  is Paramix::Parametric
 
-  def self.included_with_parameters(base, opt)
+  parameterized do |opt|
 
     # The attribute to use to keep the position.
     
-    opt_position = opt.fetch(:position, "position")
+    opt_position = opt.fetch(:position, :position)
 
     # The type of the position attribute.
     
@@ -39,28 +41,62 @@ module Orderable
       end
     end
 
-    base.module_eval %{
-      attr_accessor :#{opt_position}, #{opt_type}
+    attr_accessor opt_position, opt_type
 
-      def orderable_attribute
-        #{opt_position.inspect}
+    define_method :orderable_attribute do
+      opt_position
+    end
+
+    define_method :orderable_position do
+      instance_variable_get("@#{opt_position}")
+    end
+
+    define_method :orderable_position= do |pos|
+      instance_variable_set("@#{opt_position}", pos)
+    end
+
+    define_method :orderable_type do
+      opt_type
+    end
+
+    define_method :orderable_scope do
+      opt_scope
+    end
+
+    define_method :orderable_condition do
+      scope = orderable_scope
+      if scope
+        scope_value = send(scope)
+        scope = scope_value ? "#{scope} = #{scope_value}" : "#{scope} IS NULL"
       end
+      return [opt_condition, scope].compact
+    end
+
+=begin
+    #base.module_eval %{
+    module_eval %{
+
+      #attr_accessor :#{opt_position}, #{opt_type}
+
+      #def orderable_attribute
+      #  #{opt_position.inspect}
+      #end
           
-      def orderable_position
-        @#{opt_position}
-      end
+      #def orderable_position
+      #  @#{opt_position}
+      #end
 
-      def orderable_position= (pos)
-        @#{opt_position} = pos
-      end
+      #def orderable_position= (pos)
+      #  @#{opt_position} = pos
+      #end
 
-      def orderable_type
-        #{opt_type}
-      end
+      #def orderable_type
+      #  #{opt_type}
+      #end
    
-      def orderable_scope
-        #{opt_scope.inspect}
-      end
+      #def orderable_scope
+      #  #{opt_scope.inspect}
+      #end
 
       def orderable_condition
         scope = orderable_scope
@@ -71,14 +107,15 @@ module Orderable
         return [ #{opt_condition.inspect}, scope ].compact
       end
     }
+=end
 
   end 
 
-  before :og_insert do 
+  before :insert do
     add_to_bottom()
   end
-  
-  before :og_delete do
+
+  before :delete do
     decrement_position_of_lower_items()
   end
 

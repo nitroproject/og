@@ -3,7 +3,8 @@ require File.join(File.dirname(__FILE__), "..", "..", "helper.rb")
 require "og/model/uuid"
 
 class Article
-  include UUIDPrimaryKey
+  is Og::Model
+  is UUIDPrimaryKey
 
   attr_accessor :title, String
   attr_accessor :body, String

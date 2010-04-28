@@ -1,4 +1,4 @@
-require "facets/stylize"
+#require "facets/stylize"
 #require "facets/string/underscore"
 #require "facets/string/demodulize"
 
@@ -45,7 +45,8 @@ module SqlUtils
   
   def join_table_key(klass, index = nil)
     klass = klass.schema_inheritance_root_class if klass.schema_inheritance_child?
-    "#{klass.to_s.demodulize.underscore.downcase}#{index}_oid"
+    #"#{klass.to_s.demodulize.underscore.downcase}#{index}_oid"
+    "#{klass.basename.underscore.downcase}#{index}_oid"
   end
 
   def join_table_keys(class1, class2)

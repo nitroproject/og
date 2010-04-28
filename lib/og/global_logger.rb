@@ -38,7 +38,7 @@ class Logger
 
      def global_logger=(logger)
         if logger.is_a?(String) || logger.is_a?(IO)
-          @@global_logger = Console::Logger.new(logger)
+          @@global_logger = ::Logger.new(logger)
         elsif logger.is_a?(Logger)
           @@global_logger = logger
         else

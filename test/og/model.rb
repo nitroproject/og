@@ -4,6 +4,7 @@ describe "a model class" do
 
   before do
     class Generic
+      is Og::Model
       attr_accessor :name, String
     end
 

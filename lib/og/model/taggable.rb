@@ -7,6 +7,8 @@ require "english/inflect"
 #++
 
 class Tag
+  is Anise
+
   attr_accessor :name, String, :sql=> "VARCHAR(128)", :uniq => true, :key => true
   attr_accessor :count, Fixnum
 
@@ -140,6 +142,8 @@ module Taggable
   # The tag string separator.
 
   setting :separator, :default => ",", :doc => "The tag string separator"
+
+  #is Anise
 
   is Og::Model
 

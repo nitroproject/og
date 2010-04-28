@@ -48,6 +48,7 @@ module Og
 #
 module Model
 
+  is Anise #::Attribute
   is RelationDSL
 
   # Persist the object. This is a wrapper method around
@@ -205,12 +206,17 @@ module Model
 
   # Assign the attributes of this object from the given hash
   # of values.
-
+  #--
+  # TODO: This was using AttributeUtils.populate_object, but the
+  # definition for it has gone missing. I simply put Facets' #assign 
+  # in it's place. I have no idea what the +options+ might be or do.
+  #++
   def assign_attributes(values, options = {})
-    AttributeUtils.populate_object(self, values, options)
+    #AttributeUtils.populate_object(self, values, options)
+    assign(values)
     return self
   end
-  alias_method :assign, :assign_attributes
+  #alias_method :assign, :assign_attributes
 
   # Save all building collections. Transparently called
   # when saving an object, allows efficient object relationship
@@ -290,7 +296,8 @@ module Model
         obj = self.new
       end
 
-      obj.assign_with(hash)
+      #obj.instance_assign(hash)
+      obj.populate(hash)
 
       ogmanager.with_store do |s|
         s.save(obj)
